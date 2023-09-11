@@ -1,0 +1,19 @@
+name: alphabet_index_listview
+description: A sample command-line application.
+version: 1.0.0
+# repository: https://github.com/my_org/my_repo
+
+environment:
+  sdk: ^2.17.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  scroll_to_index: ^3.0.1
+  lpinyin: ^2.0.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
