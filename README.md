@@ -2,7 +2,7 @@
 
 List<String> dataList = List.from({"Alpha","Beta","Gama","Hello","World"});
 
-///generated to list of AlphabetIndexGroup , return your data string which to generate the fist letter tag.
+///generated AlphabetIndexGroup list, return your data string which used to get the fist letter tag.
 
 List<AlphabetIndexGroup<String>> generatedList = AlphabetIndexTool.analyzeData(dataList,(data)=>data);
 
