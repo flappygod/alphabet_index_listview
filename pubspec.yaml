@@ -1,6 +1,7 @@
 name: alphabet_index_listview
-description: A sample command-line application.
+description: a a-z indexed listview
 version: 1.0.0
+homepage: https://github.com/flappygod/alphabet_index_listview.git
 # repository: https://github.com/my_org/my_repo
 
 environment:
