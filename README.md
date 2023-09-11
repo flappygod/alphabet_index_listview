@@ -1,10 +1,13 @@
-///Your list ,maybe a string list
+///Your list ,maybe a string list.
+
 List<String> dataList = List.from({"Alpha","Beta","Gama","Hello","World"});
 
 ///generated to list of AlphabetIndexGroup , return your data string which to generate the fist letter tag.
+
 List<AlphabetIndexGroup<String>> generatedList = AlphabetIndexTool.analyzeData(dataList,(data)=>data);
 
-///build your list view
+///build your list view.
+
 return AlphabetIndexListView(
       stickHeader: true,
       dataList: _groupContactList,
