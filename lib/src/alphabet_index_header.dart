@@ -55,7 +55,9 @@ class _AlphabetIndexHeaderState<T> extends State<AlphabetIndexHeader<T>> {
   ///init state
   void initState() {
     _scrollCurrentOffset = widget.scrollCurrentOffset;
-    _listener = () {
+    _listener = () async {
+      _refreshTopBar();
+      await Future.delayed(Duration(milliseconds: 20));
       _refreshTopBar();
     };
     widget.scrollController.addListener(_listener);
