@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
-
-import 'alphabet_index_list.dart';
+import 'alphabet_index_base.dart';
 
 ///controller
 class AlphabetIndexTipBarController extends ChangeNotifier {

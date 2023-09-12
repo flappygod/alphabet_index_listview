@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'alphabet_index_list.dart';
+
+import 'alphabet_index_base.dart';
 
 ///tag changed callback
 typedef AlphabetIndexTagChanged = void Function(String tag);

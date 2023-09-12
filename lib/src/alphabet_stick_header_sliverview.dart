@@ -1,14 +1,14 @@
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
-import 'alphabet_index_base.dart';
 import 'alphabet_index_header.dart';
+import 'alphabet_index_base.dart';
 import 'alphabet_index_tool.dart';
 
 typedef AlphabetHeaderScrollToProvider = int Function(int group, {int child});
 
 ///group list view controller
-class AlphabetHeaderListViewController<T> {
+class AlphabetHeaderSliverViewController<T> {
   ///scroll controller
   final AutoScrollController _scrollController;
 
@@ -19,7 +19,7 @@ class AlphabetHeaderListViewController<T> {
   AlphabetHeaderScrollToProvider? _headerScrollToProvider;
 
   ///create list view controller
-  AlphabetHeaderListViewController({
+  AlphabetHeaderSliverViewController({
     AutoScrollController? scrollController,
   }) : _scrollController = scrollController ?? AutoScrollController();
 
@@ -58,9 +58,9 @@ class AlphabetHeaderListViewController<T> {
 }
 
 ///group list view
-class AlphabetHeaderListView<T> extends StatefulWidget {
+class AlphabetHeaderSliverView<T> extends StatefulWidget {
   //controller
-  final AlphabetHeaderListViewController<T> controller;
+  final AlphabetHeaderSliverViewController<T> controller;
 
   //group builder
   final AlphabetIndexGroupBuilder groupBuilder;
@@ -85,7 +85,7 @@ class AlphabetHeaderListView<T> extends StatefulWidget {
   final ChildIndexGetter? findChildIndexCallback;
   final EdgeInsets? padding;
 
-  const AlphabetHeaderListView({
+  const AlphabetHeaderSliverView({
     super.key,
     required this.dataList,
     required this.controller,
@@ -108,12 +108,12 @@ class AlphabetHeaderListView<T> extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return _AlphabetHeaderListViewState<T>();
+    return _AlphabetHeaderSliverViewState<T>();
   }
 }
 
 ///group list view state
-class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
+class _AlphabetHeaderSliverViewState<T> extends State<AlphabetHeaderSliverView<T>> {
   //unique str
   final String _uniqueStr = "alphabet_index_list_view_stick_header_index_prefix";
 
@@ -141,7 +141,7 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
   }
 
   ///controller has changed
-  void didUpdateWidget(AlphabetHeaderListView<T> oldWidget) {
+  void didUpdateWidget(AlphabetHeaderSliverView<T> oldWidget) {
     if (oldWidget.controller != widget.controller) {
       oldWidget.controller._headerScrollToProvider = null;
       widget.controller._headerScrollToProvider = _provider;
@@ -181,45 +181,48 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
 
   ///build list view
   Widget _buildListView() {
-    return ListView.builder(
+    return CustomScrollView(
       key: _scrollKey,
       controller: widget.controller._scrollController,
-      itemCount: AlphabetIndexTool.getItemIndexCount(widget.dataList),
-      addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
-      addRepaintBoundaries: widget.addRepaintBoundaries,
-      addSemanticIndexes: widget.addSemanticIndexes,
       physics: widget.physics,
       cacheExtent: widget.cacheExtent,
       dragStartBehavior: widget.dragStartBehavior,
       semanticChildCount: widget.semanticChildCount,
-      findChildIndexCallback: widget.findChildIndexCallback,
       keyboardDismissBehavior: widget.keyboardDismissBehavior,
       clipBehavior: widget.clipBehavior,
       restorationId: widget.restorationId,
-      padding: widget.padding,
-      itemBuilder: (context, index) {
-        Widget indexItem;
-        if (AlphabetIndexTool.isItemIndexGroup(widget.dataList, index)) {
-          int groupIndex = AlphabetIndexTool.getItemIndexGroupPos(widget.dataList, index);
-          AlphabetIndexGroup<T> group = widget.dataList[groupIndex];
-          indexItem = widget.groupBuilder(group.tag, groupIndex);
-        } else {
-          int groupIndex = AlphabetIndexTool.getItemIndexGroupPos(widget.dataList, index);
-          int childIndex = AlphabetIndexTool.getItemIndexChildPos(widget.dataList, index);
-          AlphabetIndexGroup<T> group = widget.dataList[groupIndex];
-          indexItem = widget.childBuilder(
-            group.dataList[childIndex],
-            groupIndex,
-            childIndex,
-          );
-        }
-        return AutoScrollTag(
-          index: index,
-          key: ValueKey(_uniqueStr + "." + index.toString()),
-          controller: widget.controller._scrollController,
-          child: indexItem,
-        );
-      },
+      slivers: [
+        SliverList.builder(
+          itemCount: AlphabetIndexTool.getItemIndexCount(widget.dataList),
+          findChildIndexCallback: widget.findChildIndexCallback,
+          addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
+          addRepaintBoundaries: widget.addRepaintBoundaries,
+          addSemanticIndexes: widget.addSemanticIndexes,
+          itemBuilder: (context, index) {
+            Widget indexItem;
+            if (AlphabetIndexTool.isItemIndexGroup(widget.dataList, index)) {
+              int groupIndex = AlphabetIndexTool.getItemIndexGroupPos(widget.dataList, index);
+              AlphabetIndexGroup<T> group = widget.dataList[groupIndex];
+              indexItem = widget.groupBuilder(group.tag, groupIndex);
+            } else {
+              int groupIndex = AlphabetIndexTool.getItemIndexGroupPos(widget.dataList, index);
+              int childIndex = AlphabetIndexTool.getItemIndexChildPos(widget.dataList, index);
+              AlphabetIndexGroup<T> group = widget.dataList[groupIndex];
+              indexItem = widget.childBuilder(
+                group.dataList[childIndex],
+                groupIndex,
+                childIndex,
+              );
+            }
+            return AutoScrollTag(
+              index: index,
+              key: ValueKey(_uniqueStr + "." + index.toString()),
+              controller: widget.controller._scrollController,
+              child: indexItem,
+            );
+          },
+        ),
+      ],
     );
   }
 }

@@ -1,6 +1,7 @@
-import 'package:alphabet_index_listview/alphabet_index_listview.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:flutter/cupertino.dart';
+import 'alphabet_index_base.dart';
+import 'alphabet_index_tool.dart';
 
 ///index tips bar
 class AlphabetIndexHeader<T> extends StatefulWidget {

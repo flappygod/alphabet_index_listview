@@ -1,10 +1,12 @@
-import 'package:alphabet_index_listview/alphabet_index_listview.dart';
+import 'alphabet_stick_header_sliverview.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'alphabet_index_sidebar.dart';
+import 'alphabet_index_tip_bar.dart';
+import 'alphabet_index_base.dart';
 
 ///index bar list view
-class AlphabetIndexListView<T> extends StatefulWidget {
+class AlphabetIndexSliverView<T> extends StatefulWidget {
   //group builder
   final AlphabetIndexGroupBuilder groupBuilder;
 
@@ -51,7 +53,7 @@ class AlphabetIndexListView<T> extends StatefulWidget {
   final EdgeInsets? padding;
 
   //index bar list view
-  const AlphabetIndexListView({
+  const AlphabetIndexSliverView({
     super.key,
     this.headerView,
     this.headerViewTag,
@@ -80,23 +82,21 @@ class AlphabetIndexListView<T> extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return _AlphabetIndexListViewState<T>();
+    return _AlphabetIndexSliverViewState<T>();
   }
 }
 
-
-
 ///index bar list view
-class _AlphabetIndexListViewState<T> extends State<AlphabetIndexListView<T>> {
+class _AlphabetIndexSliverViewState<T> extends State<AlphabetIndexSliverView<T>> {
   ///head stick view controller
-  late AlphabetHeaderListViewController<T> _alphabetHeaderListViewController;
+  late AlphabetHeaderSliverViewController<T> _alphabetHeaderListViewController;
 
   ///tips bar controller
   final AlphabetIndexTipBarController _indexTipBarController = AlphabetIndexTipBarController();
 
   @override
   void initState() {
-    _alphabetHeaderListViewController = AlphabetHeaderListViewController();
+    _alphabetHeaderListViewController = AlphabetHeaderSliverViewController();
     super.initState();
   }
 
@@ -121,7 +121,7 @@ class _AlphabetIndexListViewState<T> extends State<AlphabetIndexListView<T>> {
 
   ///build list view
   Widget _buildListView() {
-    return AlphabetHeaderListView<T>(
+    return AlphabetHeaderSliverView<T>(
       stickHeader: widget.stickHeader,
       dataList: widget.dataList,
       controller: _alphabetHeaderListViewController,

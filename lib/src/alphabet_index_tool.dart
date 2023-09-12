@@ -1,5 +1,6 @@
 import 'package:lpinyin/lpinyin.dart';
-import 'alphabet_index_list.dart';
+
+import 'alphabet_index_base.dart';
 
 ///index bar name provider
 typedef AlphabetIndexNameProvider<T> = String Function(T data);
