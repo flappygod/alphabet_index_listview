@@ -31,8 +31,8 @@ class AlphabetIndexSliverView<T> extends StatefulWidget {
   //header view
   final Widget? headerView;
 
-  //header view tag
-  final String? headerViewTag;
+  //footer view
+  final Widget? footerView;
 
   //alphabet list
   final List<String>? sideBarAlphabet;
@@ -56,7 +56,7 @@ class AlphabetIndexSliverView<T> extends StatefulWidget {
   const AlphabetIndexSliverView({
     super.key,
     this.headerView,
-    this.headerViewTag,
+    this.footerView,
     required this.dataList,
     required this.groupBuilder,
     required this.childBuilder,
@@ -122,6 +122,8 @@ class _AlphabetIndexSliverViewState<T> extends State<AlphabetIndexSliverView<T>>
   ///build list view
   Widget _buildListView() {
     return AlphabetHeaderSliverView<T>(
+      headerView: widget.headerView,
+      footerView: widget.footerView,
       stickHeader: widget.stickHeader,
       dataList: widget.dataList,
       controller: _alphabetHeaderListViewController,

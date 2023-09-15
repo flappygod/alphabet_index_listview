@@ -112,6 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
         child: AlphabetIndexSliverView(
+          headerView:  Container(height: 120,color:Colors.red),
           stickHeader: true,
           dataList: generatedList!,
           tipsBarAlign: AlphabetIndexTipsAlign.center,
