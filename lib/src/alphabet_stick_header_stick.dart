@@ -98,6 +98,9 @@ class _AlphabetHeaderListViewOffsetViewState<T> extends State<AlphabetHeaderList
   ///listener
   late VoidCallback _listener;
 
+  ///offset size
+  Size? _offsetSize;
+
   @override
   void initState() {
     _listener = () {
@@ -128,6 +131,10 @@ class _AlphabetHeaderListViewOffsetViewState<T> extends State<AlphabetHeaderList
     AlphabetIndexGroup<T> currentGroup = widget.dataList[widget.groupIndex];
     return Column(
       children: [
+        _buildMeasureItem(
+          formerGroup,
+          currentGroup,
+        ),
         _buildOffsetView(
           formerGroup,
           currentGroup,
@@ -140,20 +147,46 @@ class _AlphabetHeaderListViewOffsetViewState<T> extends State<AlphabetHeaderList
     );
   }
 
-  ///build offset view
-  Widget _buildOffsetView(AlphabetIndexGroup<T>? formerGroup, AlphabetIndexGroup<T> currentGroup) {
-    if (formerGroup == null || widget.controller.currentGroup != (widget.groupIndex - 1) || !widget.controller.isOffset) {
+  ///build measure item
+  Widget _buildMeasureItem(AlphabetIndexGroup<T>? formerGroup, AlphabetIndexGroup<T> currentGroup) {
+    if (_offsetSize != null || formerGroup == null) {
       return const SizedBox();
     }
-    return SizedBox(
-      height: 0.001,
-      child: OverflowBox(
-        minHeight: 30,
-        maxHeight: 30,
-        alignment: Alignment.bottomCenter,
+    return Offstage(
+      child: ObserveWidget(
+        listener: (size) {
+          _offsetSize = size;
+          setState(() {});
+        },
         child: widget.builder(
           formerGroup.tag,
           widget.groupIndex - 1,
+        ),
+      ),
+    );
+  }
+
+  ///build offset view
+  Widget _buildOffsetView(AlphabetIndexGroup<T>? formerGroup, AlphabetIndexGroup<T> currentGroup) {
+    if (_offsetSize == null || formerGroup == null) {
+      return const SizedBox();
+    }
+    return Visibility(
+      visible: widget.controller.currentGroup == (widget.groupIndex - 1) && widget.controller.isOffset,
+      maintainSize: true,
+      maintainState: true,
+      maintainAnimation: true,
+      maintainSemantics: true,
+      child: SizedBox(
+        height: 0.01,
+        child: OverflowBox(
+          minHeight: _offsetSize?.height ?? 0,
+          maxHeight: _offsetSize?.height ?? 0,
+          alignment: Alignment.bottomCenter,
+          child: widget.builder(
+            formerGroup.tag,
+            widget.groupIndex - 1,
+          ),
         ),
       ),
     );
@@ -235,6 +268,59 @@ class _AlphabetHeaderListViewStickViewState<T> extends State<AlphabetHeaderListV
       child: widget.groupBuilder(
         widget.dataList.map((e) => e.tag).toList()[widget.stickOffsetController.currentGroup],
         widget.stickOffsetController.currentGroup,
+      ),
+    );
+  }
+}
+
+///observe height listener
+typedef ObserveHeightListener = Function(Size height);
+
+///Observe widget height
+class ObserveWidget extends StatefulWidget {
+  //child
+  final Widget child;
+
+  //listener
+  final ObserveHeightListener listener;
+
+  const ObserveWidget({
+    Key? key,
+    required this.listener,
+    required this.child,
+  }) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() {
+    return _ObserveWidgetState();
+  }
+}
+
+class _ObserveWidgetState extends State<ObserveWidget> {
+  //globalKey
+  final GlobalKey _globalKey = GlobalKey();
+
+  //size
+  Size? size;
+
+  //addPostFrameCallback
+  void _setListener() {
+    WidgetsBinding.instance.addPostFrameCallback((mag) {
+      if (_globalKey.currentContext?.size != null &&
+          (_globalKey.currentContext?.size?.width != size?.width || _globalKey.currentContext?.size?.height != size?.height)) {
+        size = _globalKey.currentContext?.size;
+        widget.listener(_globalKey.currentContext!.size!);
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    _setListener();
+    return Offstage(
+      child: SizedBox(
+        key: _globalKey,
+        child: widget.child,
       ),
     );
   }
