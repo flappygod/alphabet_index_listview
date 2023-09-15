@@ -33,7 +33,7 @@ class AlphabetHeaderListViewController<T> {
       int index = _headerScrollToProvider!(groupIndex);
       _scrollController.scrollToIndex(
         index,
-        duration: scrollAnimationDuration ?? Duration(milliseconds: 20),
+        duration: scrollAnimationDuration ?? Duration(milliseconds: 1),
         preferPosition: preferPosition ?? AutoScrollPosition.begin,
       );
     }
