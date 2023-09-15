@@ -111,19 +111,25 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        child: AlphabetIndexListView(
+        child: AlphabetIndexSliverView(
           stickHeader: true,
           dataList: generatedList!,
           tipsBarAlign: AlphabetIndexTipsAlign.center,
           sideBarAlign: AlphabetIndexSideAlign.right,
           //sideBarAlphabet: kDefaultAlphabets,
           groupBuilder: (String tag, int groupIndex) {
-            return Container(
-              color: Colors.grey,
-              height: 60,
-              alignment: Alignment.centerLeft,
-              padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-              child: Text(tag),
+            return GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: (){
+                print("AAA"+groupIndex.toString());
+              },
+              child: Container(
+                color: Colors.grey,
+                height: 60,
+                alignment: Alignment.centerLeft,
+                padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                child: Text(tag),
+              ),
             );
           },
           childBuilder: (String data, int groupIndex, int childIndex) {

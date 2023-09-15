@@ -85,6 +85,9 @@ class AlphabetHeaderSliverView<T> extends StatefulWidget {
   final ChildIndexGetter? findChildIndexCallback;
   final EdgeInsets? padding;
 
+  ///the group height is instability
+  final instabilityHeaderHeight;
+
   const AlphabetHeaderSliverView({
     super.key,
     required this.dataList,
@@ -104,6 +107,7 @@ class AlphabetHeaderSliverView<T> extends StatefulWidget {
     this.restorationId,
     this.findChildIndexCallback,
     this.padding,
+    this.instabilityHeaderHeight = false,
   });
 
   @override
@@ -123,14 +127,21 @@ class _AlphabetHeaderSliverViewState<T> extends State<AlphabetHeaderSliverView<T
   ///data update listener
   late AlphabetHeaderScrollToProvider _provider;
 
+  ///frame update callback
+  late VoidCallback _frameUpdateListener;
+
   ///header controller
   final AlphabetHeaderListViewGroupController _headerController = AlphabetHeaderListViewGroupController();
 
   ///header key
   final GlobalKey _headerKey = GlobalKey();
 
-  ///init state
-  void initState() {
+  ///calculated group position list
+  final Map<int, GroupPosition> _groupPositionList = {};
+
+  ///init controllers
+  void _initControllers() {
+    ///set index provider for controller to known which index to jump
     _provider = (int group, {int? child}) {
       if (child == null) {
         return AlphabetIndexTool.getItemIndexFromGroupPos(widget.dataList, group);
@@ -139,6 +150,17 @@ class _AlphabetHeaderSliverViewState<T> extends State<AlphabetHeaderSliverView<T
       }
     };
     widget.controller._headerScrollToProvider = _provider;
+
+    ///update frame and calculate all groups position if need
+    _frameUpdateListener = () {
+      _refreshGroupPositions();
+    };
+    UpdateFrameTool.instance.addFrameListener(_frameUpdateListener);
+  }
+
+  ///init state
+  void initState() {
+    _initControllers();
     super.initState();
   }
 
@@ -154,6 +176,7 @@ class _AlphabetHeaderSliverViewState<T> extends State<AlphabetHeaderSliverView<T
 
   ///dispose
   void dispose() {
+    UpdateFrameTool.instance.removeFrameListener(_frameUpdateListener);
     widget.controller._headerScrollToProvider = null;
     _headerController.dispose();
     super.dispose();
@@ -185,7 +208,8 @@ class _AlphabetHeaderSliverViewState<T> extends State<AlphabetHeaderSliverView<T
   Widget _buildListView() {
     return NotificationListener(
       onNotification: (notification) {
-        _refreshTopBar();
+        _refreshGroupAndOffset();
+        _refreshGroupPositions();
         return false;
       },
       child: CustomScrollView(
@@ -209,11 +233,9 @@ class _AlphabetHeaderSliverViewState<T> extends State<AlphabetHeaderSliverView<T
               Widget indexItem;
               if (AlphabetIndexTool.isItemIndexGroup(widget.dataList, index)) {
                 int groupIndex = AlphabetIndexTool.getItemIndexGroupPos(widget.dataList, index);
-                indexItem = AlphabetHeaderListViewOffsetView(
-                  dataList: widget.dataList,
-                  controller: _headerController,
-                  groupIndex: groupIndex,
-                  builder: widget.groupBuilder,
+                indexItem = widget.groupBuilder(
+                  widget.dataList[groupIndex].tag,
+                  groupIndex,
                 );
               } else {
                 int groupIndex = AlphabetIndexTool.getItemIndexGroupPos(widget.dataList, index);
@@ -238,75 +260,115 @@ class _AlphabetHeaderSliverViewState<T> extends State<AlphabetHeaderSliverView<T
     );
   }
 
-  ///refresh top bar
-  void _refreshTopBar() {
-    ///get list render box
-    RenderBox? listRenderBox = _scrollKey.currentContext?.findRenderObject() as RenderBox?;
-    Offset? listOffset = listRenderBox?.localToGlobal(const Offset(0.0, 0.0));
-    if (listOffset == null) {
-      return;
-    }
-
-    ///get total count
-    int totalCount = AlphabetIndexTool.getItemIndexCount(widget.dataList);
-
-    ///scroll offset default zero
-    double? scrollOffset;
-    int? scrollIndex;
-    RenderBox? headerRenderBox = _headerKey.currentContext?.findRenderObject() as RenderBox?;
-    double? headerRenderBoxHeight = headerRenderBox?.size.height ?? 0;
-
-    ///check for all
-    for (int key = 0; key < totalCount; key++) {
-      ///get item data
-      AutoScrollTagState<AutoScrollTag>? data = widget.controller._scrollController.tagMap[key];
-      RenderBox? itemBox = data?.context.findRenderObject() as RenderBox?;
-
-      ///get offset top and bottom
-      Offset? itemTopOffset = itemBox?.localToGlobal(Offset(0.0, 0.0));
-      Offset? itemBottomOffset = itemTopOffset != null ? Offset(itemTopOffset.dx, itemTopOffset.dy + itemBox!.size.height) : null;
-
-      ///calculate current scroll index
-      if (key == 0 && itemTopOffset != null && itemTopOffset.dy - listOffset.dy > 0) {
-        scrollIndex = -1;
-      }
-      if (itemBottomOffset != null && itemBottomOffset.dy - listOffset.dy > 0 && scrollIndex == null) {
-        scrollIndex = AlphabetIndexTool.getItemIndexGroupPos(widget.dataList, key);
+  ///refresh top stick
+  void _refreshGroupPositions() {
+    ///always calculate the header height
+    if (widget.instabilityHeaderHeight) {
+      ///get list render box
+      RenderBox? listRenderBox = _scrollKey.currentContext?.findRenderObject() as RenderBox?;
+      Offset? listOffset = listRenderBox?.localToGlobal(const Offset(0.0, 0.0));
+      if (listOffset == null) {
+        return;
       }
 
-      ///calculate offset if any item must offset
-      if (itemTopOffset != null &&
-          headerRenderBoxHeight != 0 &&
-          itemTopOffset.dy - listOffset.dy > 0 &&
-          itemTopOffset.dy - listOffset.dy < headerRenderBoxHeight) {
-        if (AlphabetIndexTool.isItemIndexGroup(widget.dataList, key) && scrollOffset == null) {
-          scrollOffset = itemTopOffset.dy - listOffset.dy - headerRenderBoxHeight;
+      ///calculate group positions
+      for (int s = 0; s < widget.dataList.length; s++) {
+        ///get item data
+        int groupIndex = AlphabetIndexTool.getItemIndexFromGroupPos(widget.dataList, s);
+        AutoScrollTagState<AutoScrollTag>? data = widget.controller._scrollController.tagMap[groupIndex];
+        RenderBox? itemBox = data?.context.findRenderObject() as RenderBox?;
+        Offset? itemTopOffset = itemBox?.localToGlobal(Offset(0.0, 0.0));
+
+        ///calculate data
+        if (itemTopOffset != null) {
+          double scrollOffset = itemTopOffset.dy - listOffset.dy + widget.controller._scrollController.position.pixels;
+          _groupPositionList[s] = GroupPosition(scrollOffset, scrollOffset + itemBox!.size.height);
         }
       }
+    } else {
+      ///get list render box
+      RenderBox? listRenderBox = _scrollKey.currentContext?.findRenderObject() as RenderBox?;
+      Offset? listOffset = listRenderBox?.localToGlobal(const Offset(0.0, 0.0));
+      if (listOffset == null) {
+        return;
+      }
 
-      ///scrollIndex had set and scroll over
-      if (itemTopOffset != null && itemTopOffset.dy - listOffset.dy > headerRenderBoxHeight && scrollIndex != null) {
-        break;
+      ///calculate group positions
+      bool allCalculated = true;
+      for (int s = 0; s < widget.dataList.length; s++) {
+        if (_groupPositionList[s] == null) {
+          allCalculated = false;
+        }
+      }
+      if (allCalculated) {
+        return;
+      }
+
+      ///calculate group positions
+      for (int s = 0; s < widget.dataList.length; s++) {
+        ///has calculated ,continue
+        if (_groupPositionList[s] != null) {
+          continue;
+        }
+
+        ///get item data
+        int groupIndex = AlphabetIndexTool.getItemIndexFromGroupPos(widget.dataList, s);
+        AutoScrollTagState<AutoScrollTag>? data = widget.controller._scrollController.tagMap[groupIndex];
+        RenderBox? itemBox = data?.context.findRenderObject() as RenderBox?;
+        Offset? itemTopOffset = itemBox?.localToGlobal(Offset(0.0, 0.0));
+
+        ///calculate data
+        if (itemTopOffset != null) {
+          double scrollOffset = itemTopOffset.dy - listOffset.dy + widget.controller._scrollController.position.pixels;
+          _groupPositionList[s] = GroupPosition(scrollOffset, scrollOffset + itemBox!.size.height);
+        }
       }
     }
+  }
 
-    ///scroll and set current state
-    int currentIndex = scrollIndex ?? -1;
-    double currentOffset = scrollOffset ?? 0;
-    if (currentOffset <= -headerRenderBoxHeight || currentOffset >= 0) {
-      currentOffset = 0;
+  ///refresh
+  void _refreshGroupAndOffset() {
+    ///get pixels
+    double scrollOffset = widget.controller.scrollController.position.pixels;
+
+    ///current offset
+    double currentOffset = 0;
+
+    /// current group
+    int currentIndex = 0;
+    for (int s = 1; s < widget.dataList.length; s++) {
+      //calculated offset
+      GroupPosition? positionFormer = _groupPositionList[s - 1];
+      GroupPosition? positionCurrent = _groupPositionList[s];
+      if (positionFormer != null && positionCurrent != null) {
+        double offsetStart = positionCurrent.startPosition - positionFormer.height;
+        double offsetEnd = positionCurrent.startPosition;
+        if (scrollOffset > offsetStart && scrollOffset < offsetEnd) {
+          currentOffset = scrollOffset - offsetStart;
+          break;
+        }
+      }
+      //calculated current group index
+      if (positionCurrent != null) {
+        if (scrollOffset > positionCurrent.startPosition) {
+          currentIndex = s;
+        }
+        if (scrollOffset < positionCurrent.startPosition) {
+          break;
+        }
+      }
     }
 
     ///current offset
     if (currentOffset == 0) {
       _headerController.setCurrentGroup(
         currentIndex,
-        false,
+        currentOffset,
       );
     } else {
       _headerController.setCurrentGroup(
         currentIndex,
-        true,
+        currentOffset,
       );
     }
   }

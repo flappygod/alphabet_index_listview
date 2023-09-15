@@ -85,6 +85,29 @@ class AlphabetIndexGroup<T> {
   });
 }
 
+///group position
+class GroupPosition {
+  double _startPosition = 0;
+
+  double _endPosition = 0;
+
+  double get startPosition => _startPosition;
+
+  double get endPosition => _endPosition;
+
+  double get height{
+    return _endPosition-_startPosition;
+  }
+
+  GroupPosition(
+      double startPosition,
+      double endPosition,
+  ){
+    _startPosition = double.parse(startPosition.toStringAsFixed(1));
+    _endPosition = double.parse(endPosition.toStringAsFixed(1));
+  }
+}
+
 ///index bar group builder
 typedef AlphabetIndexGroupBuilder = Widget Function(String tag, int groupIndex);
 
