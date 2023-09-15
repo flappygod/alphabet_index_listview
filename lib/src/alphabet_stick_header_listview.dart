@@ -332,8 +332,8 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
     double currentOffset = 0;
 
     /// current group
-    int currentIndex = 0;
-    for (int s = 1; s < widget.dataList.length; s++) {
+    int currentIndex = -1;
+    for (int s = 0; s < widget.dataList.length; s++) {
       //calculated offset
       GroupPosition? positionFormer = _groupPositionList[s - 1];
       GroupPosition? positionCurrent = _groupPositionList[s];

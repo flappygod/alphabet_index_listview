@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'alphabet_stick_header_stick.dart';
 import 'package:flutter/cupertino.dart';
@@ -71,6 +72,10 @@ class AlphabetHeaderSliverView<T> extends StatefulWidget {
   //data list
   final List<AlphabetIndexGroup<T>> dataList;
 
+  final Widget? headerView;
+
+  final Widget? footerView;
+
   final bool stickHeader;
   final bool addAutomaticKeepAlives;
   final bool addRepaintBoundaries;
@@ -108,6 +113,8 @@ class AlphabetHeaderSliverView<T> extends StatefulWidget {
     this.findChildIndexCallback,
     this.padding,
     this.instabilityHeaderHeight = false,
+    this.headerView,
+    this.footerView,
   });
 
   @override
@@ -223,6 +230,9 @@ class _AlphabetHeaderSliverViewState<T> extends State<AlphabetHeaderSliverView<T
         clipBehavior: widget.clipBehavior,
         restorationId: widget.restorationId,
         slivers: [
+          SliverToBoxAdapter(
+            child: widget.headerView,
+          ),
           SliverList.builder(
             itemCount: AlphabetIndexTool.getItemIndexCount(widget.dataList),
             findChildIndexCallback: widget.findChildIndexCallback,
@@ -254,6 +264,9 @@ class _AlphabetHeaderSliverViewState<T> extends State<AlphabetHeaderSliverView<T
                 child: indexItem,
               );
             },
+          ),
+          SliverToBoxAdapter(
+            child: widget.footerView,
           ),
         ],
       ),
@@ -335,8 +348,8 @@ class _AlphabetHeaderSliverViewState<T> extends State<AlphabetHeaderSliverView<T
     double currentOffset = 0;
 
     /// current group
-    int currentIndex = 0;
-    for (int s = 1; s < widget.dataList.length; s++) {
+    int currentIndex = -1;
+    for (int s = 0; s < widget.dataList.length; s++) {
       //calculated offset
       GroupPosition? positionFormer = _groupPositionList[s - 1];
       GroupPosition? positionCurrent = _groupPositionList[s];
