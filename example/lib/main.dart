@@ -120,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
           groupBuilder: (String tag, int groupIndex) {
             return Container(
               color: Colors.grey,
-              height: 30,
+              height: 60,
               alignment: Alignment.centerLeft,
               padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
               child: Text(tag),
@@ -129,7 +129,7 @@ class _MyHomePageState extends State<MyHomePage> {
           childBuilder: (String data, int groupIndex, int childIndex) {
             return Container(
               color: Colors.white,
-              height: 60,
+              height: 120,
               alignment: Alignment.centerLeft,
               padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
               child: Text(data),
