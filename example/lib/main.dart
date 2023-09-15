@@ -69,17 +69,17 @@ class _MyHomePageState extends State<MyHomePage> {
     "Words",
     "Work",
     "Woman",
-    // "Foot",
-    // "Head",
-    // "Face",
-    // "Hair",
-    // "Nose",
-    // "Mouth",
-    // "Eye",
-    // "Arm",
-    // "Hand",
-    // "Finger",
-    // "Leg",
+    "Foot",
+    "Head",
+    "Face",
+    "Hair",
+    "Nose",
+    "Mouth",
+    "Eye",
+    "Arm",
+    "Hand",
+    "Finger",
+    "Leg",
   });
 
   List<AlphabetIndexGroup<String>>? generatedList;
@@ -111,7 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        child: AlphabetIndexSliverView(
+        child: AlphabetIndexListView(
           stickHeader: true,
           dataList: generatedList!,
           tipsBarAlign: AlphabetIndexTipsAlign.center,
