@@ -112,7 +112,8 @@ class _MyHomePageState extends State<MyHomePage> {
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
         child: AlphabetIndexSliverView(
-          headerView:  Container(height: 120,color:Colors.red),
+          headerView: Container(height: 120, color: Colors.red),
+          footerView: Container(height: 120, color: Colors.red),
           stickHeader: true,
           dataList: generatedList!,
           tipsBarAlign: AlphabetIndexTipsAlign.center,
@@ -121,8 +122,8 @@ class _MyHomePageState extends State<MyHomePage> {
           groupBuilder: (String tag, int groupIndex) {
             return GestureDetector(
               behavior: HitTestBehavior.translucent,
-              onTap: (){
-                print("AAA"+groupIndex.toString());
+              onTap: () {
+                print("AAA" + groupIndex.toString());
               },
               child: Container(
                 color: Colors.grey,
