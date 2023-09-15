@@ -290,7 +290,7 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
     ///scroll and set current state
     int currentIndex = scrollIndex ?? -1;
     double currentOffset = scrollOffset ?? 0;
-    if (currentOffset < -headerRenderBoxHeight || currentOffset > 0) {
+    if (currentOffset <= -headerRenderBoxHeight || currentOffset >= 0) {
       currentOffset = 0;
     }
 
