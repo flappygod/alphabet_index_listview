@@ -231,6 +231,7 @@ class _AlphabetHeaderListViewStickViewState<T> extends State<AlphabetHeaderListV
       maintainSize: true,
       maintainState: true,
       maintainAnimation: true,
+      maintainSemantics: true,
       child: widget.groupBuilder(
         widget.dataList.map((e) => e.tag).toList()[widget.stickOffsetController.currentGroup],
         widget.stickOffsetController.currentGroup,
