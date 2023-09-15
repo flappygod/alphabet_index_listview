@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'alphabet_stick_header_stick.dart';
 import 'package:flutter/cupertino.dart';
@@ -18,25 +20,36 @@ class AlphabetHeaderListViewController<T> {
   ///provider
   AlphabetHeaderScrollToProvider? _headerScrollToProvider;
 
+  ///scrolling
+  bool _isScrolling = false;
+
   ///create list view controller
   AlphabetHeaderListViewController({
     AutoScrollController? scrollController,
   }) : _scrollController = scrollController ?? AutoScrollController();
 
   ///scroll to group
-  void scrollToGroup(
+  Future<bool> scrollToGroup(
     int groupIndex, {
     Duration? scrollAnimationDuration,
     AutoScrollPosition? preferPosition,
-  }) {
+  }) async {
     if (_headerScrollToProvider != null) {
       int index = _headerScrollToProvider!(groupIndex);
-      _scrollController.scrollToIndex(
-        index,
-        duration: scrollAnimationDuration ?? Duration(milliseconds: 1),
-        preferPosition: preferPosition ?? AutoScrollPosition.begin,
-      );
+      if (_isScrolling == false) {
+        _isScrolling = true;
+        await _scrollController.scrollToIndex(
+          index,
+          duration: scrollAnimationDuration ?? Duration(milliseconds: 20),
+          preferPosition: preferPosition ?? AutoScrollPosition.begin,
+        );
+        _isScrolling = false;
+        return true;
+      } else {
+        return false;
+      }
     }
+    return false;
   }
 
   ///scroll to child
