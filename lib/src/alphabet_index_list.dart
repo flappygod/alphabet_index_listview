@@ -26,12 +26,6 @@ class AlphabetIndexListView<T> extends StatefulWidget {
   //side bar builder
   final AlphabetIndexSideBuilder? sideBarBuilder;
 
-  //header view
-  final Widget? headerView;
-
-  //header view tag
-  final String? headerViewTag;
-
   //alphabet list
   final List<String>? sideBarAlphabet;
 
@@ -53,8 +47,6 @@ class AlphabetIndexListView<T> extends StatefulWidget {
   //index bar list view
   const AlphabetIndexListView({
     super.key,
-    this.headerView,
-    this.headerViewTag,
     required this.dataList,
     required this.groupBuilder,
     required this.childBuilder,
@@ -83,8 +75,6 @@ class AlphabetIndexListView<T> extends StatefulWidget {
     return _AlphabetIndexListViewState<T>();
   }
 }
-
-
 
 ///index bar list view
 class _AlphabetIndexListViewState<T> extends State<AlphabetIndexListView<T>> {
