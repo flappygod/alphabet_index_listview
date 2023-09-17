@@ -32,7 +32,7 @@ const List<String> kDefaultAlphabets = const [
 ];
 
 ///group scrolled
-typedef AlphabetIndexGroupScrolled = Function( int groupIndex);
+typedef AlphabetIndexGroupScrolled = Function(int groupIndex);
 
 ///none bar
 AlphabetIndexGroupBuilder kTipsBarNone = (String tag, int groupIndex) {
@@ -59,7 +59,6 @@ AlphabetIndexGroupBuilder kTipsBarDefault = (String tag, int groupIndex) {
     ),
   );
 };
-
 
 ///align
 enum AlphabetIndexSideAlign {
@@ -99,14 +98,14 @@ class GroupPosition {
 
   double get endPosition => _endPosition;
 
-  double get height{
-    return _endPosition-_startPosition;
+  double get height {
+    return _endPosition - _startPosition;
   }
 
   GroupPosition(
-      double startPosition,
-      double endPosition,
-  ){
+    double startPosition,
+    double endPosition,
+  ) {
     _startPosition = double.parse(startPosition.toStringAsFixed(1));
     _endPosition = double.parse(endPosition.toStringAsFixed(1));
   }
@@ -116,7 +115,8 @@ class GroupPosition {
 typedef AlphabetIndexGroupBuilder = Widget Function(String tag, int groupIndex);
 
 ///index bar group builder
-typedef AlphabetIndexChildBuilder<T> = Widget Function(T data, int groupIndex, int childIndex);
+typedef AlphabetIndexChildBuilder<T> = Widget Function(
+    T data, int groupIndex, int childIndex);
 
 ///index bar group builder
 typedef AlphabetIndexSideBuilder = Widget Function(String tag, bool selected);

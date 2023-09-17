@@ -142,9 +142,11 @@ class AlphabetHeaderSliverView<T> extends StatefulWidget {
 }
 
 ///group list view state
-class _AlphabetHeaderSliverViewState<T> extends State<AlphabetHeaderSliverView<T>> {
+class _AlphabetHeaderSliverViewState<T>
+    extends State<AlphabetHeaderSliverView<T>> {
   ///unique str
-  final String _uniqueStr = "alphabet_index_list_view_stick_header_index_prefix";
+  final String _uniqueStr =
+      "alphabet_index_list_view_stick_header_index_prefix";
 
   ///scroll key
   final GlobalKey _scrollKey = GlobalKey();
@@ -156,7 +158,8 @@ class _AlphabetHeaderSliverViewState<T> extends State<AlphabetHeaderSliverView<T
   late VoidCallback _frameUpdateListener;
 
   ///header controller
-  final AlphabetHeaderListViewGroupController _headerController = AlphabetHeaderListViewGroupController();
+  final AlphabetHeaderListViewGroupController _headerController =
+      AlphabetHeaderListViewGroupController();
 
   ///header key
   final GlobalKey _headerKey = GlobalKey();
@@ -169,9 +172,13 @@ class _AlphabetHeaderSliverViewState<T> extends State<AlphabetHeaderSliverView<T
     ///set index provider for controller to known which index to jump
     _provider = (int group, {int? child}) {
       if (child == null) {
-        return AlphabetIndexTool.getItemIndexFromGroupPos(widget.dataList, group);
+        return AlphabetIndexTool.getItemIndexFromGroupPos(
+            widget.dataList, group);
       } else {
-        return AlphabetIndexTool.getItemIndexFromGroupPos(widget.dataList, group) + child + 1;
+        return AlphabetIndexTool.getItemIndexFromGroupPos(
+                widget.dataList, group) +
+            child +
+            1;
       }
     };
     widget.controller._headerScrollToProvider = _provider;
@@ -259,14 +266,17 @@ class _AlphabetHeaderSliverViewState<T> extends State<AlphabetHeaderSliverView<T
             itemBuilder: (context, index) {
               Widget indexItem;
               if (AlphabetIndexTool.isItemIndexGroup(widget.dataList, index)) {
-                int groupIndex = AlphabetIndexTool.getItemIndexGroupPos(widget.dataList, index);
+                int groupIndex = AlphabetIndexTool.getItemIndexGroupPos(
+                    widget.dataList, index);
                 indexItem = widget.groupBuilder(
                   widget.dataList[groupIndex].tag,
                   groupIndex,
                 );
               } else {
-                int groupIndex = AlphabetIndexTool.getItemIndexGroupPos(widget.dataList, index);
-                int childIndex = AlphabetIndexTool.getItemIndexChildPos(widget.dataList, index);
+                int groupIndex = AlphabetIndexTool.getItemIndexGroupPos(
+                    widget.dataList, index);
+                int childIndex = AlphabetIndexTool.getItemIndexChildPos(
+                    widget.dataList, index);
                 AlphabetIndexGroup<T> group = widget.dataList[groupIndex];
                 indexItem = widget.childBuilder(
                   group.dataList[childIndex],
@@ -295,7 +305,8 @@ class _AlphabetHeaderSliverViewState<T> extends State<AlphabetHeaderSliverView<T
     ///always calculate the header height
     if (widget.instabilityHeaderHeight) {
       ///get list render box
-      RenderBox? listRenderBox = _scrollKey.currentContext?.findRenderObject() as RenderBox?;
+      RenderBox? listRenderBox =
+          _scrollKey.currentContext?.findRenderObject() as RenderBox?;
       Offset? listOffset = listRenderBox?.localToGlobal(const Offset(0.0, 0.0));
       if (listOffset == null) {
         return;
@@ -304,20 +315,26 @@ class _AlphabetHeaderSliverViewState<T> extends State<AlphabetHeaderSliverView<T
       ///calculate group positions
       for (int s = 0; s < widget.dataList.length; s++) {
         ///get item data
-        int groupIndex = AlphabetIndexTool.getItemIndexFromGroupPos(widget.dataList, s);
-        AutoScrollTagState<AutoScrollTag>? data = widget.controller._scrollController.tagMap[groupIndex];
+        int groupIndex =
+            AlphabetIndexTool.getItemIndexFromGroupPos(widget.dataList, s);
+        AutoScrollTagState<AutoScrollTag>? data =
+            widget.controller._scrollController.tagMap[groupIndex];
         RenderBox? itemBox = data?.context.findRenderObject() as RenderBox?;
         Offset? itemTopOffset = itemBox?.localToGlobal(Offset(0.0, 0.0));
 
         ///calculate data
         if (itemTopOffset != null) {
-          double scrollOffset = itemTopOffset.dy - listOffset.dy + widget.controller._scrollController.position.pixels;
-          _groupPositionList[s] = GroupPosition(scrollOffset, scrollOffset + itemBox!.size.height);
+          double scrollOffset = itemTopOffset.dy -
+              listOffset.dy +
+              widget.controller._scrollController.position.pixels;
+          _groupPositionList[s] =
+              GroupPosition(scrollOffset, scrollOffset + itemBox!.size.height);
         }
       }
     } else {
       ///get list render box
-      RenderBox? listRenderBox = _scrollKey.currentContext?.findRenderObject() as RenderBox?;
+      RenderBox? listRenderBox =
+          _scrollKey.currentContext?.findRenderObject() as RenderBox?;
       Offset? listOffset = listRenderBox?.localToGlobal(const Offset(0.0, 0.0));
       if (listOffset == null) {
         return;
@@ -342,15 +359,20 @@ class _AlphabetHeaderSliverViewState<T> extends State<AlphabetHeaderSliverView<T
         }
 
         ///get item data
-        int groupIndex = AlphabetIndexTool.getItemIndexFromGroupPos(widget.dataList, s);
-        AutoScrollTagState<AutoScrollTag>? data = widget.controller._scrollController.tagMap[groupIndex];
+        int groupIndex =
+            AlphabetIndexTool.getItemIndexFromGroupPos(widget.dataList, s);
+        AutoScrollTagState<AutoScrollTag>? data =
+            widget.controller._scrollController.tagMap[groupIndex];
         RenderBox? itemBox = data?.context.findRenderObject() as RenderBox?;
         Offset? itemTopOffset = itemBox?.localToGlobal(Offset(0.0, 0.0));
 
         ///calculate data
         if (itemTopOffset != null) {
-          double scrollOffset = itemTopOffset.dy - listOffset.dy + widget.controller._scrollController.position.pixels;
-          _groupPositionList[s] = GroupPosition(scrollOffset, scrollOffset + itemBox!.size.height);
+          double scrollOffset = itemTopOffset.dy -
+              listOffset.dy +
+              widget.controller._scrollController.position.pixels;
+          _groupPositionList[s] =
+              GroupPosition(scrollOffset, scrollOffset + itemBox!.size.height);
         }
       }
     }
@@ -371,7 +393,8 @@ class _AlphabetHeaderSliverViewState<T> extends State<AlphabetHeaderSliverView<T
       GroupPosition? positionFormer = _groupPositionList[s - 1];
       GroupPosition? positionCurrent = _groupPositionList[s];
       if (positionFormer != null && positionCurrent != null) {
-        double offsetStart = positionCurrent.startPosition - positionFormer.height;
+        double offsetStart =
+            positionCurrent.startPosition - positionFormer.height;
         double offsetEnd = positionCurrent.startPosition;
         if (scrollOffset > offsetStart && scrollOffset < offsetEnd) {
           currentOffset = scrollOffset - offsetStart;
@@ -390,7 +413,9 @@ class _AlphabetHeaderSliverViewState<T> extends State<AlphabetHeaderSliverView<T
     }
 
     ///group index changed
-    if (_headerController.currentGroup != currentIndex && widget.onGroupSelected != null && currentIndex != -1) {
+    if (_headerController.currentGroup != currentIndex &&
+        widget.onGroupSelected != null &&
+        currentIndex != -1) {
       widget.onGroupSelected!(currentIndex);
     }
 

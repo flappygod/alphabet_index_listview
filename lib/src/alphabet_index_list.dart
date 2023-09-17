@@ -86,7 +86,8 @@ class _AlphabetIndexListViewState<T> extends State<AlphabetIndexListView<T>> {
   late AlphabetHeaderListViewController<T> _alphabetHeaderListViewController;
 
   ///tips bar controller
-  final AlphabetIndexTipBarController _indexTipBarController = AlphabetIndexTipBarController();
+  final AlphabetIndexTipBarController _indexTipBarController =
+      AlphabetIndexTipBarController();
 
   @override
   void initState() {
@@ -140,7 +141,8 @@ class _AlphabetIndexListViewState<T> extends State<AlphabetIndexListView<T>> {
   ///build index bar
   Widget _buildIndexBar() {
     ///get tags
-    List<String> sideBarTags = widget.sideBarAlphabet ?? widget.dataList.map((e) => e.tag).toList();
+    List<String> sideBarTags =
+        widget.sideBarAlphabet ?? widget.dataList.map((e) => e.tag).toList();
 
     ///alphabet index side bar
     return AlphabetIndexSideBar(
@@ -153,7 +155,8 @@ class _AlphabetIndexListViewState<T> extends State<AlphabetIndexListView<T>> {
       onGestureEnd: () {
         _indexTipBarController.isGesture = false;
       },
-      onPositionChange: (Size currentSize, String currentTag, int currentIndex, double offsetFromCenter) {
+      onPositionChange: (Size currentSize, String currentTag, int currentIndex,
+          double offsetFromCenter) {
         ///now we calculate the data list tags list , the side bar tags may not the same with data tags!
         List<String> dataTags = widget.dataList.map((e) => e.tag).toList();
         int dataIndex = dataTags.indexOf(currentTag);
@@ -170,7 +173,9 @@ class _AlphabetIndexListViewState<T> extends State<AlphabetIndexListView<T>> {
             _indexTipBarController.setGroup(
               currentTag,
               currentIndex,
-              widget.sideBarAlign == AlphabetIndexSideAlign.left ? currentSize.width : 0,
+              widget.sideBarAlign == AlphabetIndexSideAlign.left
+                  ? currentSize.width
+                  : 0,
               offsetFromCenter,
             );
             break;
@@ -178,7 +183,9 @@ class _AlphabetIndexListViewState<T> extends State<AlphabetIndexListView<T>> {
             _indexTipBarController.setGroup(
               currentTag,
               currentIndex,
-              widget.sideBarAlign == AlphabetIndexSideAlign.right ? -currentSize.width : 0,
+              widget.sideBarAlign == AlphabetIndexSideAlign.right
+                  ? -currentSize.width
+                  : 0,
               offsetFromCenter,
             );
             break;

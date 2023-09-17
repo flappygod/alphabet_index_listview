@@ -113,12 +113,12 @@ class _MyHomePageState extends State<MyHomePage> {
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
         child: AlphabetIndexListView(
-        //child: AlphabetIndexSliverView(
+          //child: AlphabetIndexSliverView(
           // headerView: Container(height: 120, color: Colors.red),
           // footerView: Container(height: 120, color: Colors.red),
           stickHeader: true,
           dataList: generatedList!,
-          onGroupSelected: (int index){
+          onGroupSelected: (int index) {
             if (kDebugMode) {
               print("Group$index");
             }

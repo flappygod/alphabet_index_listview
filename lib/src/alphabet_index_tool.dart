@@ -79,7 +79,8 @@ class AlphabetIndexTool {
   }
 
   ///get group index
-  static int getItemIndexGroupPos(List<AlphabetIndexGroup> dataList, int index) {
+  static int getItemIndexGroupPos(
+      List<AlphabetIndexGroup> dataList, int index) {
     int count = 0;
     int groupIndex = 0;
     for (AlphabetIndexGroup group in dataList) {
@@ -93,7 +94,8 @@ class AlphabetIndexTool {
   }
 
   ///get child index
-  static int getItemIndexChildPos(List<AlphabetIndexGroup> dataList, int index) {
+  static int getItemIndexChildPos(
+      List<AlphabetIndexGroup> dataList, int index) {
     int count = 0;
     for (AlphabetIndexGroup group in dataList) {
       count = count + group.dataList.length + 1;
@@ -105,14 +107,12 @@ class AlphabetIndexTool {
   }
 
   ///get index for group
-  static int getItemIndexFromGroupPos(List<AlphabetIndexGroup> dataList, int group) {
+  static int getItemIndexFromGroupPos(
+      List<AlphabetIndexGroup> dataList, int group) {
     int count = 0;
     for (int s = 0; s < dataList.length && s < group; s++) {
       count = count + dataList[s].dataList.length + 1;
     }
     return count;
   }
-
-
-
 }

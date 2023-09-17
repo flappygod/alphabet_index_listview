@@ -18,7 +18,8 @@ class AlphabetIndexTipBarController extends ChangeNotifier {
   //set offset
   double _translateOffsetY = 0;
 
-  void setGroup(String groupTag, int groupIndex, double offsetX, double offsetY) {
+  void setGroup(
+      String groupTag, int groupIndex, double offsetX, double offsetY) {
     _selectedTag = groupTag;
     _selectedGroup = groupIndex;
     _translateOffsetX = offsetX;
@@ -88,7 +89,9 @@ class _AlphabetIndexTipBarState extends State<AlphabetIndexTipBar> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.controller._selectedTag == null || widget.controller._selectedTag!.isEmpty || widget.controller._selectedGroup == null) {
+    if (widget.controller._selectedTag == null ||
+        widget.controller._selectedTag!.isEmpty ||
+        widget.controller._selectedGroup == null) {
       return const SizedBox();
     }
 

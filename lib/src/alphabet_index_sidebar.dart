@@ -97,7 +97,9 @@ class _AlphabetIndexSideBarState extends State<AlphabetIndexSideBar> {
     }
 
     return Align(
-      alignment: widget.sideBarAlign == AlphabetIndexSideAlign.right ? Alignment.centerRight : Alignment.centerLeft,
+      alignment: widget.sideBarAlign == AlphabetIndexSideAlign.right
+          ? Alignment.centerRight
+          : Alignment.centerLeft,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onPanDown: (DragDownDetails details) {
