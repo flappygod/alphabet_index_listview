@@ -1,4 +1,5 @@
 import 'package:alphabet_index_listview/alphabet_index_listview.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -117,22 +118,21 @@ class _MyHomePageState extends State<MyHomePage> {
           // footerView: Container(height: 120, color: Colors.red),
           stickHeader: true,
           dataList: generatedList!,
+          onGroupSelected: (int index){
+            if (kDebugMode) {
+              print("Group$index");
+            }
+          },
           tipsBarAlign: AlphabetIndexTipsAlign.center,
           sideBarAlign: AlphabetIndexSideAlign.right,
           //sideBarAlphabet: kDefaultAlphabets,
           groupBuilder: (String tag, int groupIndex) {
-            return GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onTap: () {
-                print("AAA" + groupIndex.toString());
-              },
-              child: Container(
-                color: Colors.grey,
-                height: 60,
-                alignment: Alignment.centerLeft,
-                padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-                child: Text(tag),
-              ),
+            return Container(
+              color: Colors.grey,
+              height: 60,
+              alignment: Alignment.centerLeft,
+              padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+              child: Text(tag),
             );
           },
           childBuilder: (String data, int groupIndex, int childIndex) {

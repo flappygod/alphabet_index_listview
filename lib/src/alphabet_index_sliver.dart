@@ -37,6 +37,9 @@ class AlphabetIndexSliverView<T> extends StatefulWidget {
   //alphabet list
   final List<String>? sideBarAlphabet;
 
+  //group selected
+  final AlphabetIndexGroupScrolled? onGroupSelected;
+
   //stick header
   final bool stickHeader;
   final bool addAutomaticKeepAlives;
@@ -78,6 +81,7 @@ class AlphabetIndexSliverView<T> extends StatefulWidget {
     this.restorationId,
     this.findChildIndexCallback,
     this.padding,
+    this.onGroupSelected,
   });
 
   @override
@@ -122,6 +126,7 @@ class _AlphabetIndexSliverViewState<T> extends State<AlphabetIndexSliverView<T>>
   ///build list view
   Widget _buildListView() {
     return AlphabetHeaderSliverView<T>(
+      onGroupSelected: widget.onGroupSelected,
       headerView: widget.headerView,
       footerView: widget.footerView,
       stickHeader: widget.stickHeader,

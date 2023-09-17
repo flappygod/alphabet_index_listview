@@ -1,11 +1,10 @@
-import 'dart:async';
-
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'alphabet_stick_header_stick.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'alphabet_index_base.dart';
 import 'alphabet_index_tool.dart';
+import 'dart:async';
 
 typedef AlphabetHeaderScrollToProvider = int Function(int group, {int child});
 
@@ -84,6 +83,9 @@ class AlphabetHeaderListView<T> extends StatefulWidget {
   //data list
   final List<AlphabetIndexGroup<T>> dataList;
 
+  //group selected
+  final AlphabetIndexGroupScrolled? onGroupSelected;
+
   final bool stickHeader;
   final bool addAutomaticKeepAlives;
   final bool addRepaintBoundaries;
@@ -107,6 +109,7 @@ class AlphabetHeaderListView<T> extends StatefulWidget {
     required this.controller,
     required this.groupBuilder,
     required this.childBuilder,
+    this.onGroupSelected,
     this.stickHeader = true,
     this.addAutomaticKeepAlives = true,
     this.addRepaintBoundaries = true,
@@ -222,7 +225,6 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
         _refreshGroupAndOffset();
-        _refreshGroupPositions();
         return false;
       },
       child: ListView.builder(
@@ -360,13 +362,18 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
       }
       //calculated current group index
       if (positionCurrent != null) {
-        if (scrollOffset > positionCurrent.startPosition) {
+        if (scrollOffset >= positionCurrent.startPosition) {
           currentIndex = s;
         }
         if (scrollOffset < positionCurrent.startPosition) {
           break;
         }
       }
+    }
+
+    ///group index changed
+    if (_headerController.currentGroup != currentIndex && widget.onGroupSelected != null && currentIndex != -1) {
+      widget.onGroupSelected!(currentIndex);
     }
 
     ///current offset

@@ -26,6 +26,9 @@ class AlphabetIndexListView<T> extends StatefulWidget {
   //side bar builder
   final AlphabetIndexSideBuilder? sideBarBuilder;
 
+  //group selected
+  final AlphabetIndexGroupScrolled? onGroupSelected;
+
   //alphabet list
   final List<String>? sideBarAlphabet;
 
@@ -68,6 +71,7 @@ class AlphabetIndexListView<T> extends StatefulWidget {
     this.restorationId,
     this.findChildIndexCallback,
     this.padding,
+    this.onGroupSelected,
   });
 
   @override
@@ -112,6 +116,7 @@ class _AlphabetIndexListViewState<T> extends State<AlphabetIndexListView<T>> {
   ///build list view
   Widget _buildListView() {
     return AlphabetHeaderListView<T>(
+      onGroupSelected: widget.onGroupSelected,
       stickHeader: widget.stickHeader,
       dataList: widget.dataList,
       controller: _alphabetHeaderListViewController,

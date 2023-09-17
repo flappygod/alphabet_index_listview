@@ -31,6 +31,9 @@ const List<String> kDefaultAlphabets = const [
   '#'
 ];
 
+///group scrolled
+typedef AlphabetIndexGroupScrolled = Function( int groupIndex);
+
 ///none bar
 AlphabetIndexGroupBuilder kTipsBarNone = (String tag, int groupIndex) {
   return const SizedBox();
@@ -56,6 +59,7 @@ AlphabetIndexGroupBuilder kTipsBarDefault = (String tag, int groupIndex) {
     ),
   );
 };
+
 
 ///align
 enum AlphabetIndexSideAlign {

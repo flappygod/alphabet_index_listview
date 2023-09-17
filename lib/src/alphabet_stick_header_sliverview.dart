@@ -1,12 +1,11 @@
-import 'dart:async';
-
-import 'package:flutter/material.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'alphabet_stick_header_stick.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
 import 'alphabet_index_base.dart';
 import 'alphabet_index_tool.dart';
+import 'dart:async';
 
 typedef AlphabetHeaderScrollToProvider = int Function(int group, {int child});
 
@@ -31,10 +30,10 @@ class AlphabetHeaderSliverViewController<T> {
 
   ///scroll to group
   Future<bool> scrollToGroup(
-      int groupIndex, {
-        Duration? scrollAnimationDuration,
-        AutoScrollPosition? preferPosition,
-      }) async {
+    int groupIndex, {
+    Duration? scrollAnimationDuration,
+    AutoScrollPosition? preferPosition,
+  }) async {
     if (_headerScrollToProvider != null) {
       int index = _headerScrollToProvider!(groupIndex);
       if (_isScrolling == false) {
@@ -85,9 +84,14 @@ class AlphabetHeaderSliverView<T> extends StatefulWidget {
   //data list
   final List<AlphabetIndexGroup<T>> dataList;
 
+  //header view
   final Widget? headerView;
 
+  //foot view
   final Widget? footerView;
+
+  //group selected
+  final AlphabetIndexGroupScrolled? onGroupSelected;
 
   final bool stickHeader;
   final bool addAutomaticKeepAlives;
@@ -112,6 +116,7 @@ class AlphabetHeaderSliverView<T> extends StatefulWidget {
     required this.controller,
     required this.groupBuilder,
     required this.childBuilder,
+    this.onGroupSelected,
     this.stickHeader = true,
     this.addAutomaticKeepAlives = true,
     this.addRepaintBoundaries = true,
@@ -229,7 +234,6 @@ class _AlphabetHeaderSliverViewState<T> extends State<AlphabetHeaderSliverView<T
     return NotificationListener(
       onNotification: (notification) {
         _refreshGroupAndOffset();
-        _refreshGroupPositions();
         return false;
       },
       child: CustomScrollView(
@@ -376,13 +380,18 @@ class _AlphabetHeaderSliverViewState<T> extends State<AlphabetHeaderSliverView<T
       }
       //calculated current group index
       if (positionCurrent != null) {
-        if (scrollOffset > positionCurrent.startPosition) {
+        if (scrollOffset >= positionCurrent.startPosition) {
           currentIndex = s;
         }
         if (scrollOffset < positionCurrent.startPosition) {
           break;
         }
       }
+    }
+
+    ///group index changed
+    if (_headerController.currentGroup != currentIndex && widget.onGroupSelected != null && currentIndex != -1) {
+      widget.onGroupSelected!(currentIndex);
     }
 
     ///current offset
