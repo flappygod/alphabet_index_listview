@@ -1,3 +1,3 @@
-## 1.0.2
+## 1.0.3
 
-- clip stick header view
+- change stick header child build.

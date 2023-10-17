@@ -143,6 +143,12 @@ class _AlphabetHeaderListViewStickViewState<T> extends State<AlphabetHeaderListV
   ///listener
   late VoidCallback _listener;
 
+  ///child
+  Widget? _child;
+
+  ///child group
+  int? _childGroup;
+
   ///init state
   void initState() {
     _listener = () {
@@ -150,6 +156,18 @@ class _AlphabetHeaderListViewStickViewState<T> extends State<AlphabetHeaderListV
     };
     widget.stickOffsetController.addListener(_listener);
     super.initState();
+  }
+
+  ///get child
+  Widget _getChild() {
+    if (_childGroup != widget.stickOffsetController.currentGroup) {
+      _childGroup = widget.stickOffsetController.currentGroup;
+      _child = widget.groupBuilder(
+        widget.dataList.map((e) => e.tag).toList()[widget.stickOffsetController.currentGroup],
+        widget.stickOffsetController.currentGroup,
+      );
+    }
+    return _child ?? const SizedBox();
   }
 
   ///update to reset listener
@@ -172,14 +190,14 @@ class _AlphabetHeaderListViewStickViewState<T> extends State<AlphabetHeaderListV
     if (widget.stickOffsetController.currentGroup == -1 || widget.dataList.isEmpty) {
       return const SizedBox();
     }
-    return Transform.translate(
-      offset: Offset(
-        0,
-        min(-widget.stickOffsetController.currentOffset + 1 / MediaQuery.of(context).devicePixelRatio, 0),
-      ),
-      child: widget.groupBuilder(
-        widget.dataList.map((e) => e.tag).toList()[widget.stickOffsetController.currentGroup],
-        widget.stickOffsetController.currentGroup,
+    return ClipRect(
+      clipBehavior: Clip.hardEdge,
+      child: Transform.translate(
+        offset: Offset(
+          0,
+          min(-widget.stickOffsetController.currentOffset + 1 / MediaQuery.of(context).devicePixelRatio, 0),
+        ),
+        child: _getChild(),
       ),
     );
   }
