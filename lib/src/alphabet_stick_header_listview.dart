@@ -208,7 +208,7 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
   Widget build(BuildContext context) {
     if (widget.stickHeader) {
       return Stack(
-        clipBehavior: Clip.none,
+        clipBehavior: widget.clipBehavior,
         children: [
           _buildListView(),
           AlphabetHeaderListViewStickView(
