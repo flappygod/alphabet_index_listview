@@ -1,3 +1,3 @@
-## 1.0.3
+## 1.0.4
 
-- change stick header child build.
+- add stick header sliver view.

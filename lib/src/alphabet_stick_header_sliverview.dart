@@ -7,7 +7,7 @@ import 'alphabet_index_base.dart';
 import 'alphabet_index_tool.dart';
 import 'dart:async';
 
-typedef AlphabetHeaderScrollToProvider = int Function(int group, {int child});
+
 
 ///group list view controller
 class AlphabetHeaderSliverViewController<T> {

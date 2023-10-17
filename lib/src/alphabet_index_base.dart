@@ -34,6 +34,9 @@ const List<String> kDefaultAlphabets = const [
 ///group scrolled
 typedef AlphabetIndexGroupScrolled = Function(int groupIndex);
 
+///provider
+typedef AlphabetHeaderScrollToProvider = int Function(int group, {int child});
+
 ///none bar
 AlphabetIndexGroupBuilder kTipsBarNone = (String tag, int groupIndex) {
   return const SizedBox();
