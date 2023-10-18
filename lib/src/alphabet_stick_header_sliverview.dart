@@ -40,7 +40,7 @@ class AlphabetHeaderSliverViewController<T> {
         _isScrolling = true;
         await _scrollController.scrollToIndex(
           index,
-          duration: scrollAnimationDuration ?? Duration(milliseconds: 20),
+          duration: scrollAnimationDuration ?? Duration(milliseconds: 450),
           preferPosition: preferPosition ?? AutoScrollPosition.begin,
         );
         _isScrolling = false;
@@ -63,7 +63,7 @@ class AlphabetHeaderSliverViewController<T> {
       int index = _headerScrollToProvider!(groupIndex, child: childIndex);
       _scrollController.scrollToIndex(
         index,
-        duration: scrollAnimationDuration ?? Duration(microseconds: 1),
+        duration: scrollAnimationDuration ?? Duration(microseconds: 450),
         preferPosition: preferPosition ?? AutoScrollPosition.begin,
       );
     }
