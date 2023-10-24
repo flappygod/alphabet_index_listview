@@ -1,3 +1,3 @@
-## 1.0.4
+## 1.0.5
 
-- add stick header sliver view.
+- Fix a bug that addPersistentFrameCallback in initState

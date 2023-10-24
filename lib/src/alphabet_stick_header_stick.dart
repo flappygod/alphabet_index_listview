@@ -56,24 +56,21 @@ class UpdateFrameTool {
   static final UpdateFrameTool _instance = UpdateFrameTool._internal();
 
   ///init
-  UpdateFrameTool._internal();
-
-  ///listeners
-  List<VoidCallback> _listeners = [];
-
-  ///is init or not ,only once
-  static bool _isInit = false;
-
-  ///add frame listener
-  void addFrameListener(VoidCallback callback) {
-    if (!_isInit) {
-      _isInit = true;
+  UpdateFrameTool._internal(){
+    Future.delayed(const Duration(milliseconds: 10)).then((value) {
       WidgetsBinding.instance.addPersistentFrameCallback((timeStamp) {
         for (VoidCallback listener in _listeners) {
           listener();
         }
       });
-    }
+    });
+  }
+
+  ///listeners
+  List<VoidCallback> _listeners = [];
+
+  ///add frame listener
+  void addFrameListener(VoidCallback callback) {
     _listeners.add(callback);
   }
 
@@ -82,6 +79,7 @@ class UpdateFrameTool {
     _listeners.remove(callback);
   }
 }
+
 
 ///alphabet header list view group
 class AlphabetHeaderListViewGroupController extends BaseChangeNotifier {
