@@ -56,8 +56,11 @@ class UpdateFrameTool {
   static final UpdateFrameTool _instance = UpdateFrameTool._internal();
 
   ///init
-  UpdateFrameTool._internal(){
-    Future.delayed(const Duration(milliseconds: 10)).then((value) {
+  UpdateFrameTool._internal() {
+    WidgetsBinding.instance.addPostFrameCallback((duration) {
+      for (VoidCallback listener in _listeners) {
+        listener();
+      }
       WidgetsBinding.instance.addPersistentFrameCallback((timeStamp) {
         for (VoidCallback listener in _listeners) {
           listener();
@@ -80,11 +83,10 @@ class UpdateFrameTool {
   }
 }
 
-
 ///alphabet header list view group
 class AlphabetHeaderListViewGroupController extends BaseChangeNotifier {
   ///current group
-  int _currentGroup = 0;
+  int _currentGroup = -1;
 
   ///is offset or not
   double _currentOffset = 0;
