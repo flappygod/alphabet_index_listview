@@ -7,8 +7,6 @@ import 'alphabet_index_base.dart';
 import 'alphabet_index_tool.dart';
 import 'dart:async';
 
-
-
 ///group list view controller
 class AlphabetHeaderSliverViewController<T> {
   ///scroll controller

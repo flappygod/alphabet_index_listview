@@ -139,7 +139,8 @@ class AlphabetHeaderListViewStickView<T> extends StatefulWidget {
 }
 
 ///tips bar state
-class _AlphabetHeaderListViewStickViewState<T> extends State<AlphabetHeaderListViewStickView<T>> {
+class _AlphabetHeaderListViewStickViewState<T>
+    extends State<AlphabetHeaderListViewStickView<T>> {
   ///listener
   late VoidCallback _listener;
 
@@ -163,7 +164,9 @@ class _AlphabetHeaderListViewStickViewState<T> extends State<AlphabetHeaderListV
     if (_childGroup != widget.stickOffsetController.currentGroup) {
       _childGroup = widget.stickOffsetController.currentGroup;
       _child = widget.groupBuilder(
-        widget.dataList.map((e) => e.tag).toList()[widget.stickOffsetController.currentGroup],
+        widget.dataList
+            .map((e) => e.tag)
+            .toList()[widget.stickOffsetController.currentGroup],
         widget.stickOffsetController.currentGroup,
       );
     }
@@ -187,7 +190,8 @@ class _AlphabetHeaderListViewStickViewState<T> extends State<AlphabetHeaderListV
 
   @override
   Widget build(BuildContext context) {
-    if (widget.stickOffsetController.currentGroup == -1 || widget.dataList.isEmpty) {
+    if (widget.stickOffsetController.currentGroup == -1 ||
+        widget.dataList.isEmpty) {
       return const SizedBox();
     }
     return ClipRect(
@@ -195,7 +199,10 @@ class _AlphabetHeaderListViewStickViewState<T> extends State<AlphabetHeaderListV
       child: Transform.translate(
         offset: Offset(
           0,
-          min(-widget.stickOffsetController.currentOffset + 1 / MediaQuery.of(context).devicePixelRatio, 0),
+          min(
+              -widget.stickOffsetController.currentOffset +
+                  1 / MediaQuery.of(context).devicePixelRatio,
+              0),
         ),
         child: _getChild(),
       ),
