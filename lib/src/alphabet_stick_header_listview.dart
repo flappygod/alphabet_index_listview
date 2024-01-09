@@ -1,4 +1,4 @@
-import 'package:scroll_to_index/scroll_to_index.dart';
+import 'package:alphabet_index_listview/src/scroll_to_index/scroll_to_index.dart';
 import 'alphabet_stick_header_stick.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
@@ -14,8 +14,11 @@ class AlphabetHeaderListViewController<T> {
   ///get scroll controller
   AutoScrollController get scrollController => _scrollController;
 
-  ///provider
+  ///header scroll index provider
   AlphabetHeaderScrollToProvider? _headerScrollToProvider;
+
+  ///header height provider
+  AlphabetHeaderHeightProvider? _headerHeightProvider;
 
   ///scrolling
   bool _isScrolling = false;
@@ -26,7 +29,7 @@ class AlphabetHeaderListViewController<T> {
   }) : _scrollController = scrollController ?? AutoScrollController();
 
   ///scroll to group
-  Future<bool> scrollToGroup(
+  Future scrollToGroup(
     int groupIndex, {
     Duration? scrollAnimationDuration,
     AutoScrollPosition? preferPosition,
@@ -37,31 +40,37 @@ class AlphabetHeaderListViewController<T> {
         _isScrolling = true;
         await _scrollController.scrollToIndex(
           index,
-          duration: scrollAnimationDuration ?? Duration(milliseconds: 20),
+          duration: scrollAnimationDuration ?? Duration(milliseconds: 450),
           preferPosition: preferPosition ?? AutoScrollPosition.begin,
         );
         _isScrolling = false;
-        return true;
-      } else {
-        return false;
       }
     }
-    return false;
   }
 
   ///scroll to child
-  void scrollToChild(
+  Future<void> scrollToChild(
     int groupIndex,
     int childIndex, {
     Duration? scrollAnimationDuration,
     AutoScrollPosition? preferPosition,
-  }) {
+  }) async {
+    ///childIndex == 0 ,just scroll to group
+    if (childIndex == 0) {
+      return scrollToGroup(groupIndex);
+    }
+
+    ///childIndex != 0 and _headerScrollToProvider is set
     if (_headerScrollToProvider != null) {
       int index = _headerScrollToProvider!(groupIndex, child: childIndex);
-      _scrollController.scrollToIndex(
+      double deltaOffset = (_headerHeightProvider != null)
+          ? _headerHeightProvider!(groupIndex)
+          : 0;
+      await _scrollController.scrollToIndex(
         index,
-        duration: scrollAnimationDuration ?? Duration(microseconds: 1),
+        duration: scrollAnimationDuration ?? Duration(microseconds: 450),
         preferPosition: preferPosition ?? AutoScrollPosition.begin,
+        deltaOffset: -deltaOffset,
       );
     }
   }
@@ -142,6 +151,9 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
   ///data update listener
   late AlphabetHeaderScrollToProvider _provider;
 
+  ///height provider
+  late AlphabetHeaderHeightProvider _heightProvider;
+
   ///frame update callback
   late VoidCallback _frameUpdateListener;
 
@@ -170,6 +182,22 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
       }
     };
     widget.controller._headerScrollToProvider = _provider;
+
+    ///set height provider for controller to jump to child index with group height offset
+    _heightProvider = (int group) {
+      GroupPosition? groupPosition = _groupPositionList[group];
+      if (groupPosition != null) {
+        return groupPosition.endPosition - groupPosition.startPosition;
+      }
+
+      GroupPosition? firstOne = _groupPositionList[0];
+      if (firstOne != null) {
+        return firstOne.endPosition - firstOne.startPosition;
+      }
+
+      return _headerKey.currentContext?.size?.height ?? 0;
+    };
+    widget.controller._headerHeightProvider = _heightProvider;
 
     ///update frame and calculate all groups position if need
     _frameUpdateListener = () {
@@ -253,8 +281,8 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
             int groupIndex =
                 AlphabetIndexTool.getItemIndexGroupPos(widget.dataList, index);
             indexItem = widget.groupBuilder(
-              widget.dataList[groupIndex].tag,
               groupIndex,
+              widget.dataList[groupIndex].tag,
             );
           } else {
             int groupIndex =
@@ -263,9 +291,9 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
                 AlphabetIndexTool.getItemIndexChildPos(widget.dataList, index);
             AlphabetIndexGroup<T> group = widget.dataList[groupIndex];
             indexItem = widget.childBuilder(
-              group.dataList[childIndex],
               groupIndex,
               childIndex,
+              group.dataList[childIndex],
             );
           }
           return AutoScrollTag(

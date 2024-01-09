@@ -164,10 +164,8 @@ class _AlphabetHeaderListViewStickViewState<T>
     if (_childGroup != widget.stickOffsetController.currentGroup) {
       _childGroup = widget.stickOffsetController.currentGroup;
       _child = widget.groupBuilder(
-        widget.dataList
-            .map((e) => e.tag)
-            .toList()[widget.stickOffsetController.currentGroup],
         widget.stickOffsetController.currentGroup,
+        widget.dataList[widget.stickOffsetController.currentGroup].tag,
       );
     }
     return _child ?? const SizedBox();

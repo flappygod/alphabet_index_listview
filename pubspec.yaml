@@ -1,6 +1,6 @@
 name: alphabet_index_listview
 description: a a-z indexed listview ,based on CustomScrollView and ListView, also provide a stick header listview.
-version: 1.0.6
+version: 1.0.7
 homepage: https://github.com/flappygod/alphabet_index_listview.git
 # repository: https://github.com/my_org/my_repo
 
@@ -10,7 +10,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  scroll_to_index: ^3.0.1
   lpinyin: ^2.0.3
 
 dev_dependencies:

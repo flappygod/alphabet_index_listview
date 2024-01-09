@@ -88,6 +88,9 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     generatedList = AlphabetIndexTool.analyzeData(dataList, (data) => data);
+
+    Future.delayed(const Duration(milliseconds: 500)).then((value) {});
+
     super.initState();
   }
 
@@ -126,7 +129,7 @@ class _MyHomePageState extends State<MyHomePage> {
           tipsBarAlign: AlphabetIndexTipsAlign.center,
           sideBarAlign: AlphabetIndexSideAlign.right,
           //sideBarAlphabet: kDefaultAlphabets,
-          groupBuilder: (String tag, int groupIndex) {
+          groupBuilder: (int groupIndex, String tag) {
             return Container(
               color: Colors.grey,
               height: 60,
@@ -135,10 +138,13 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Text(tag),
             );
           },
-          childBuilder: (String data, int groupIndex, int childIndex) {
+          childBuilder: (int groupIndex, int childIndex, String data) {
             return Container(
-              color: Colors.white,
-              height: 120,
+              decoration: const BoxDecoration(
+                  color: Colors.white70,
+                  border: Border(
+                      bottom: BorderSide(color: Colors.black54, width: 0.5))),
+              height: 80,
               alignment: Alignment.centerLeft,
               padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
               child: Text(data),

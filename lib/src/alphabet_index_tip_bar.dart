@@ -101,16 +101,16 @@ class _AlphabetIndexTipBarState extends State<AlphabetIndexTipBar> {
       tipsBar = Visibility(
         visible: widget.controller._isGesture,
         child: widget.tipsBuilder!(
-          widget.controller._selectedTag!,
           widget.controller._selectedGroup!,
+          widget.controller._selectedTag!,
         ),
       );
     } else {
       tipsBar = Visibility(
         visible: widget.controller._isGesture,
         child: kTipsBarDefault(
-          widget.controller._selectedTag!,
           widget.controller._selectedGroup!,
+          widget.controller._selectedTag!,
         ),
       );
     }

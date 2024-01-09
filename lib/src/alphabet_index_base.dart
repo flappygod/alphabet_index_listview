@@ -37,13 +37,16 @@ typedef AlphabetIndexGroupScrolled = Function(int groupIndex);
 ///provider
 typedef AlphabetHeaderScrollToProvider = int Function(int group, {int child});
 
+///height provider
+typedef AlphabetHeaderHeightProvider = double Function(int group);
+
 ///none bar
-AlphabetIndexGroupBuilder kTipsBarNone = (String tag, int groupIndex) {
+AlphabetIndexGroupBuilder kTipsBarNone = (int groupIndex, String tag) {
   return const SizedBox();
 };
 
 ///none bar
-AlphabetIndexGroupBuilder kTipsBarDefault = (String tag, int groupIndex) {
+AlphabetIndexGroupBuilder kTipsBarDefault = (int groupIndex, String tag) {
   return Container(
     decoration: BoxDecoration(
       color: Colors.black.withAlpha(50),
@@ -115,11 +118,11 @@ class GroupPosition {
 }
 
 ///index bar group builder
-typedef AlphabetIndexGroupBuilder = Widget Function(String tag, int groupIndex);
+typedef AlphabetIndexGroupBuilder = Widget Function(int groupIndex, String tag);
 
 ///index bar group builder
 typedef AlphabetIndexChildBuilder<T> = Widget Function(
-    T data, int groupIndex, int childIndex);
+    int groupIndex, int childIndex, T data);
 
 ///index bar group builder
 typedef AlphabetIndexSideBuilder = Widget Function(String tag, bool selected);

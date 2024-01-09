@@ -1,3 +1,4 @@
-## 1.0.6
+## 1.0.7
 
-- Fix a bug that addPersistentFrameCallback in initState
+- Fix bugs in scroll to child index.
+- Formatted.
