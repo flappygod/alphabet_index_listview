@@ -292,8 +292,7 @@ mixin AutoScrollControllerMixin on ScrollController
         if (tagMap[nearest ?? 0] == null) return null;
 
         final moveTarget =
-            _forecastMoveUnit(index, nearest, usedSuggestedRowHeightIfAny)! +
-                deltaOffset;
+            _forecastMoveUnit(index, nearest, usedSuggestedRowHeightIfAny)!;
 
         // assume suggestRowHeight will move to correct offset in just one time.
         // if the rule doesn't work (in variable row height case), we will use backup solution (non-suggested way)
@@ -303,7 +302,7 @@ mixin AutoScrollControllerMixin on ScrollController
                 : null;
         usedSuggestedRowHeightIfAny = false; // just use once
         lastScrollDirection = moveTarget - prevOffset > 0 ? 1 : 0;
-        currentOffset = moveTarget;
+        currentOffset = moveTarget + deltaOffset;
         spentDuration += suggestedDuration ?? moveDuration;
         final oldOffset = offset;
         await animateTo(currentOffset,
@@ -428,6 +427,7 @@ mixin AutoScrollControllerMixin on ScrollController
       double targetOffset = _directionalOffsetToRevealInViewport(
           index, _positionToAlignment(preferPosition));
 
+      targetOffset = targetOffset + deltaOffset;
       // The content preferred position might be impossible to reach
       // for items close to the edges of the scroll content, e.g.
       // we cannot put the first item at the end of the viewport or
@@ -436,14 +436,12 @@ mixin AutoScrollControllerMixin on ScrollController
       // physics are set to clamp. To prevent this, we limit the
       // offset to not overshoot the extent in either direction.
       targetOffset = targetOffset.clamp(
-              position.minScrollExtent, position.maxScrollExtent) +
-          deltaOffset;
+          position.minScrollExtent, position.maxScrollExtent);
 
       await move(targetOffset);
     } else {
-      final begin =
-          _directionalOffsetToRevealInViewport(index, 0) + deltaOffset;
-      final end = _directionalOffsetToRevealInViewport(index, 1) + deltaOffset;
+      final begin = _directionalOffsetToRevealInViewport(index, 0);
+      final end = _directionalOffsetToRevealInViewport(index, 1);
 
       final alreadyInViewport = offset < begin && offset > end;
       if (!alreadyInViewport) {
