@@ -5,6 +5,9 @@ import 'alphabet_index_sidebar.dart';
 
 ///index bar list view
 class AlphabetIndexListView<T> extends StatefulWidget {
+  //controller
+  final AlphabetHeaderListViewController<T>? controller;
+
   //group builder
   final AlphabetIndexGroupBuilder groupBuilder;
 
@@ -50,6 +53,7 @@ class AlphabetIndexListView<T> extends StatefulWidget {
   //index bar list view
   const AlphabetIndexListView({
     super.key,
+    this.controller,
     required this.dataList,
     required this.groupBuilder,
     required this.childBuilder,
@@ -91,8 +95,18 @@ class _AlphabetIndexListViewState<T> extends State<AlphabetIndexListView<T>> {
 
   @override
   void initState() {
-    _alphabetHeaderListViewController = AlphabetHeaderListViewController();
+    _alphabetHeaderListViewController =
+        widget.controller ?? AlphabetHeaderListViewController();
     super.initState();
+  }
+
+  ///update widget if need
+  void didUpdateWidget(AlphabetIndexListView<T> oldWidget) {
+    if (_alphabetHeaderListViewController != widget.controller) {
+      _alphabetHeaderListViewController =
+          widget.controller ?? _alphabetHeaderListViewController;
+    }
+    super.didUpdateWidget(oldWidget);
   }
 
   @override

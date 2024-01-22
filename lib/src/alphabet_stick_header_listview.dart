@@ -1,4 +1,5 @@
-import 'package:alphabet_index_listview/src/scroll_to_index/scroll_to_index.dart';
+import 'anchor_scroller/anchor_scroll_controller.dart';
+import 'anchor_scroller/anchor_scroll_wrapper.dart';
 import 'alphabet_stick_header_stick.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
@@ -9,10 +10,10 @@ import 'dart:async';
 ///group list view controller
 class AlphabetHeaderListViewController<T> {
   ///scroll controller
-  final AutoScrollController _scrollController;
+  final AnchorScrollController _scrollController;
 
   ///get scroll controller
-  AutoScrollController get scrollController => _scrollController;
+  AnchorScrollController get scrollController => _scrollController;
 
   ///header scroll index provider
   AlphabetHeaderScrollToProvider? _headerScrollToProvider;
@@ -20,31 +21,24 @@ class AlphabetHeaderListViewController<T> {
   ///header height provider
   AlphabetHeaderHeightProvider? _headerHeightProvider;
 
-  ///scrolling
-  bool _isScrolling = false;
-
   ///create list view controller
   AlphabetHeaderListViewController({
-    AutoScrollController? scrollController,
-  }) : _scrollController = scrollController ?? AutoScrollController();
+    AnchorScrollController? scrollController,
+  }) : _scrollController = scrollController ?? AnchorScrollController();
 
   ///scroll to group
   Future scrollToGroup(
     int groupIndex, {
-    Duration? scrollAnimationDuration,
-    AutoScrollPosition? preferPosition,
+    double scrollSpeed = 10,
+    Curve curve = Curves.linear,
   }) async {
     if (_headerScrollToProvider != null) {
       int index = _headerScrollToProvider!(groupIndex);
-      if (_isScrolling == false) {
-        _isScrolling = true;
-        await _scrollController.scrollToIndex(
-          index,
-          duration: scrollAnimationDuration ?? Duration(milliseconds: 450),
-          preferPosition: preferPosition ?? AutoScrollPosition.begin,
-        );
-        _isScrolling = false;
-      }
+      await _scrollController.scrollToIndex(
+        index: index,
+        scrollSpeed: scrollSpeed,
+        curve: curve,
+      );
     }
   }
 
@@ -52,8 +46,8 @@ class AlphabetHeaderListViewController<T> {
   Future<void> scrollToChild(
     int groupIndex,
     int childIndex, {
-    Duration? scrollAnimationDuration,
-    AutoScrollPosition? preferPosition,
+    double scrollSpeed = 10,
+    Curve curve = Curves.linear,
   }) async {
     ///childIndex == 0 ,just scroll to group
     if (childIndex == 0) {
@@ -67,9 +61,9 @@ class AlphabetHeaderListViewController<T> {
           ? _headerHeightProvider!(groupIndex)
           : 0;
       await _scrollController.scrollToIndex(
-        index,
-        duration: scrollAnimationDuration ?? Duration(microseconds: 450),
-        preferPosition: preferPosition ?? AutoScrollPosition.begin,
+        index: index,
+        scrollSpeed: scrollSpeed,
+        curve: curve,
         deltaOffset: -deltaOffset,
       );
     }
@@ -296,10 +290,10 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
               group.dataList[childIndex],
             );
           }
-          return AutoScrollTag(
+          return AnchorItemWrapper(
             index: index,
             key: ValueKey(_uniqueStr + "." + index.toString()),
-            controller: widget.controller._scrollController,
+            controller: widget.controller.scrollController,
             child: indexItem,
           );
         },
@@ -324,8 +318,8 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
         ///get item data
         int groupIndex =
             AlphabetIndexTool.getItemIndexFromGroupPos(widget.dataList, s);
-        AutoScrollTagState<AutoScrollTag>? data =
-            widget.controller._scrollController.tagMap[groupIndex];
+        AnchorItemWrapperState? data =
+            widget.controller._scrollController.itemMap[groupIndex];
         RenderBox? itemBox = data?.context.findRenderObject() as RenderBox?;
         Offset? itemTopOffset = itemBox?.localToGlobal(Offset(0.0, 0.0));
 
@@ -368,8 +362,8 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
         ///get item data
         int groupIndex =
             AlphabetIndexTool.getItemIndexFromGroupPos(widget.dataList, s);
-        AutoScrollTagState<AutoScrollTag>? data =
-            widget.controller._scrollController.tagMap[groupIndex];
+        AnchorItemWrapperState? data =
+            widget.controller._scrollController.itemMap[groupIndex];
         RenderBox? itemBox = data?.context.findRenderObject() as RenderBox?;
         Offset? itemTopOffset = itemBox?.localToGlobal(Offset(0.0, 0.0));
 

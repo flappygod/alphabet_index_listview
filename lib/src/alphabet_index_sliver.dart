@@ -1,12 +1,13 @@
-import 'alphabet_stick_header_sliverview.dart';
+import 'package:alphabet_index_listview/alphabet_index_listview.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'alphabet_index_sidebar.dart';
-import 'alphabet_index_tip_bar.dart';
-import 'alphabet_index_base.dart';
 
 ///index bar list view
 class AlphabetIndexSliverView<T> extends StatefulWidget {
+  //controller
+  final AlphabetHeaderSliverViewController<T>? controller;
+
   //group builder
   final AlphabetIndexGroupBuilder groupBuilder;
 
@@ -60,6 +61,7 @@ class AlphabetIndexSliverView<T> extends StatefulWidget {
     super.key,
     this.headerView,
     this.footerView,
+    this.controller,
     required this.dataList,
     required this.groupBuilder,
     required this.childBuilder,
@@ -102,8 +104,18 @@ class _AlphabetIndexSliverViewState<T>
 
   @override
   void initState() {
-    _alphabetHeaderListViewController = AlphabetHeaderSliverViewController();
+    _alphabetHeaderListViewController =
+        widget.controller ?? AlphabetHeaderSliverViewController();
     super.initState();
+  }
+
+  ///update widget
+  void didUpdateWidget(AlphabetIndexSliverView<T> oldWidget) {
+    if (_alphabetHeaderListViewController != widget.controller) {
+      _alphabetHeaderListViewController =
+          widget.controller ?? _alphabetHeaderListViewController;
+    }
+    super.didUpdateWidget(oldWidget);
   }
 
   @override

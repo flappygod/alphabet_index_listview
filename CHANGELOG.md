@@ -1,3 +1,4 @@
-## 1.0.8
+## 1.0.9
 
-- Fix bugs in scroll to child index.
+1. Change scroll_to_index to anchor_scroll_controller for scroll to index.
+2. Add controller for user to control the scroll view.
