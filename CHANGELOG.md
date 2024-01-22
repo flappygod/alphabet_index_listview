@@ -1,4 +1,4 @@
-## 1.0.9
+## 1.0.10
 
-1. Change scroll_to_index to anchor_scroll_controller for scroll to index.
-2. Add controller for user to control the scroll view.
+1. fix a bug.
+2. readme format.
