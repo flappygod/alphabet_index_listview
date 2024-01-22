@@ -291,11 +291,11 @@ class AnchorScrollControllerHelper {
       // sometimes the offset of items may change, for example, the height of the item changes
       // after rebuild, which makes it cannot scroll to the index exactly. So, jump to the exact
       // offset in finally.
-      final targetScrollOffset = _getScrollOffset(index);
+      final targetScrollOffset =
+          _getScrollOffset(index, deltaOffset: deltaOffset);
       if (targetScrollOffset != null &&
           scrollController.offset != targetScrollOffset) {
-        scrollController
-            .jumpTo(_applyAnchorOffset(targetScrollOffset + deltaOffset));
+        scrollController.jumpTo(_applyAnchorOffset(targetScrollOffset));
       }
 
       _currIndex = index;
@@ -311,11 +311,14 @@ class AnchorScrollControllerHelper {
     double alignment = 0,
     double deltaOffset = 0,
   }) async {
-    double? offset = _getScrollOffset(index, alignment: alignment);
-    if (offset == null) {
+    final double? targetOffset = _getScrollOffset(
+      index,
+      alignment: alignment,
+      deltaOffset: deltaOffset,
+    );
+    if (targetOffset == null) {
       return;
     }
-    final targetOffset = offset + deltaOffset;
 
     final double totalOffset = _applyAnchorOffset(targetOffset);
     final int scrollTime =
@@ -329,13 +332,14 @@ class AnchorScrollControllerHelper {
   double? _getScrollOffset(
     int index, {
     double alignment = 0,
+    double deltaOffset = 0,
   }) {
     final revealOffset = _getOffsetToReveal(index, alignment: alignment);
     if (revealOffset == null) {
       return null;
     }
-
-    return revealOffset.offset.clamp(scrollController.position.minScrollExtent,
+    return (revealOffset.offset + deltaOffset).clamp(
+        scrollController.position.minScrollExtent,
         scrollController.position.maxScrollExtent + (anchorOffset ?? 0));
   }
 
