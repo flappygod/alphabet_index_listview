@@ -1,4 +1,3 @@
-## 1.0.10
+## 1.0.11
 
-1. fix a bug.
-2. readme format.
+1. Add index scroll speed setting.
