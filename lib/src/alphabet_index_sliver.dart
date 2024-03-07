@@ -86,7 +86,7 @@ class AlphabetIndexSliverView<T> extends StatefulWidget {
     this.findChildIndexCallback,
     this.padding,
     this.onGroupSelected,
-    this.indexedScrollSpeed = 6,
+    this.indexedScrollSpeed = 4,
   });
 
   @override

@@ -30,7 +30,7 @@ class AlphabetHeaderSliverViewController<T> {
   ///scroll to group
   Future scrollToGroup(
     int groupIndex, {
-    double scrollSpeed = 6,
+    double scrollSpeed = 4,
     Curve curve = Curves.linear,
   }) async {
     if (_headerScrollToProvider != null) {
@@ -47,7 +47,7 @@ class AlphabetHeaderSliverViewController<T> {
   Future scrollToChild(
     int groupIndex,
     int childIndex, {
-    double scrollSpeed = 6,
+    double scrollSpeed = 4,
     Curve curve = Curves.linear,
   }) async {
     ///childIndex == 0 ,just scroll to group
