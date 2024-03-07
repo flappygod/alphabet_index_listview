@@ -79,7 +79,7 @@ class AlphabetIndexListView<T> extends StatefulWidget {
     this.findChildIndexCallback,
     this.padding,
     this.onGroupSelected,
-    this.indexedScrollSpeed = 5,
+    this.indexedScrollSpeed = 6,
   });
 
   @override

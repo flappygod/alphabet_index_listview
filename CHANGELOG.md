@@ -1,3 +1,3 @@
-## 1.0.11
+## 1.0.12
 
-1. Add index scroll speed setting.
+1. Change scroll speed to make scrolling normal.

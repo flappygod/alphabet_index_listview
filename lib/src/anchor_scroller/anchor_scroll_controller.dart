@@ -1,5 +1,7 @@
 library anchor_scroll_controller;
 
+import 'dart:math';
+
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'anchor_scroll_wrapper.dart';
@@ -321,8 +323,9 @@ class AnchorScrollControllerHelper {
     }
 
     final double totalOffset = _applyAnchorOffset(targetOffset);
-    final int scrollTime =
+    int scrollTime =
         ((scrollController.offset - totalOffset).abs() / scrollSpeed).ceil();
+    scrollTime = max(scrollTime, 35);
     final Duration duration = Duration(milliseconds: scrollTime);
     await scrollController.animateTo(totalOffset,
         duration: duration, curve: curve);
