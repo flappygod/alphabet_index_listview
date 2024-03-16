@@ -1,3 +1,3 @@
-## 1.0.12
+## 1.0.13
 
-1. Change scroll speed to make scrolling normal.
+1. Just update to get 140 score in pub.

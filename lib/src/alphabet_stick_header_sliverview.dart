@@ -109,7 +109,7 @@ class AlphabetHeaderSliverView<T> extends StatefulWidget {
   final EdgeInsets? padding;
 
   ///the group height is instability
-  final instabilityHeaderHeight;
+  final bool instabilityHeaderHeight;
 
   const AlphabetHeaderSliverView({
     super.key,

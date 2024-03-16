@@ -102,7 +102,7 @@ class AlphabetHeaderListView<T> extends StatefulWidget {
   final EdgeInsets? padding;
 
   ///the group height is instability
-  final instabilityHeaderHeight;
+  final bool instabilityHeaderHeight;
 
   const AlphabetHeaderListView({
     super.key,
