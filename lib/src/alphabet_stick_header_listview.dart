@@ -37,7 +37,7 @@ class AlphabetHeaderListViewController<T> {
   ///scroll to group
   Future scrollToGroup(
     int groupIndex, {
-    double scrollSpeed = 4,
+    double scrollSpeed = -1,
     Curve curve = Curves.linear,
   }) async {
     if (_headerProvider == null) {
@@ -73,7 +73,7 @@ class AlphabetHeaderListViewController<T> {
   Future<void> scrollToChild(
     int groupIndex,
     int childIndex, {
-    double scrollSpeed = 4,
+    double scrollSpeed = -1,
     Curve curve = Curves.linear,
   }) async {
     ///childIndex == 0 ,just scroll to group
@@ -95,9 +95,15 @@ class AlphabetHeaderListViewController<T> {
         _preferChildHeight != null &&
         _preferChildHeight != 0 &&
         scrollSpeed <= 0) {
+      ///get group index
+      int index = _headerProvider!.provideIndex(groupIndex);
+      double maxHeight =
+          _headerProvider!.provideIndexTotalGroup() * _preferGroupHeight! +
+              _headerProvider!.provideIndexTotalChild() * _preferChildHeight! -
+              _headerProvider!.providerHeightTotalList();
       double height = groupIndex * _preferGroupHeight! +
           (index - groupIndex - 1) * _preferChildHeight!;
-      _scrollController.jumpTo(height);
+      _scrollController.jumpTo(min(height, maxHeight));
     }
 
     ///if group height prefer not set
