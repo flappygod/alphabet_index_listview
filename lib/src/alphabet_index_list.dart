@@ -53,6 +53,9 @@ class AlphabetIndexListView<T> extends StatefulWidget {
   final ChildIndexGetter? findChildIndexCallback;
   final EdgeInsets? padding;
 
+  final double? preferGroupHeight;
+  final double? preferChildHeight;
+
   //index bar list view
   const AlphabetIndexListView({
     super.key,
@@ -79,7 +82,9 @@ class AlphabetIndexListView<T> extends StatefulWidget {
     this.findChildIndexCallback,
     this.padding,
     this.onGroupSelected,
-    this.indexedScrollSpeed = 4,
+    this.indexedScrollSpeed = -1,
+    this.preferGroupHeight,
+    this.preferChildHeight,
   });
 
   @override
@@ -99,8 +104,11 @@ class _AlphabetIndexListViewState<T> extends State<AlphabetIndexListView<T>> {
 
   @override
   void initState() {
-    _alphabetHeaderListViewController =
-        widget.controller ?? AlphabetHeaderListViewController();
+    _alphabetHeaderListViewController = widget.controller ??
+        AlphabetHeaderListViewController(
+          preferGroupHeight: widget.preferGroupHeight,
+          preferChildHeight: widget.preferChildHeight,
+        );
     super.initState();
   }
 

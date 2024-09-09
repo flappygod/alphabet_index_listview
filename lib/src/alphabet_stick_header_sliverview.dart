@@ -22,10 +22,20 @@ class AlphabetHeaderSliverViewController<T> {
   ///header height provider
   AlphabetHeaderHeightProvider? _headerHeightProvider;
 
+  ///prefer group widget height
+  double? _preferGroupHeight;
+
+  ///prefer child widget height
+  double? _preferChildHeight;
+
   ///create list view controller
   AlphabetHeaderSliverViewController({
     AnchorScrollController? anchorController,
-  }) : _scrollController = anchorController ?? AnchorScrollController();
+    double? preferGroupHeight,
+    double? preferChildHeight,
+  })  : _preferGroupHeight = preferGroupHeight,
+        _preferChildHeight = preferChildHeight,
+        _scrollController = anchorController ?? AnchorScrollController();
 
   ///scroll to group
   Future scrollToGroup(
@@ -33,8 +43,27 @@ class AlphabetHeaderSliverViewController<T> {
     double scrollSpeed = 4,
     Curve curve = Curves.linear,
   }) async {
-    if (_headerScrollToProvider != null) {
-      int index = _headerScrollToProvider!(groupIndex);
+    ///scroll provider is null
+    if (_headerScrollToProvider == null) {
+      return;
+    }
+
+    ///get index
+    int index = _headerScrollToProvider!(groupIndex);
+
+    ///if group height prefer set
+    if (_preferGroupHeight != null &&
+        _preferGroupHeight != 0 &&
+        _preferChildHeight != null &&
+        _preferChildHeight != 0 &&
+        scrollSpeed <= 0) {
+      double height = groupIndex * _preferGroupHeight! +
+          (index - groupIndex - 1) * _preferChildHeight!;
+      _scrollController.jumpTo(height);
+    }
+
+    ///if group height prefer not set
+    else {
       await _scrollController.scrollToIndex(
         index: index,
         scrollSpeed: scrollSpeed,
@@ -58,15 +87,29 @@ class AlphabetHeaderSliverViewController<T> {
     ///childIndex != 0 and _headerScrollToProvider is set
     if (_headerScrollToProvider != null) {
       int index = _headerScrollToProvider!(groupIndex, child: childIndex);
-      double deltaOffset = (_headerHeightProvider != null)
-          ? _headerHeightProvider!(groupIndex)
-          : 0;
-      await _scrollController.scrollToIndex(
-        index: index,
-        scrollSpeed: scrollSpeed,
-        curve: curve,
-        deltaOffset: -deltaOffset,
-      );
+
+      ///if group height prefer set
+      if (_preferGroupHeight != null &&
+          _preferGroupHeight != 0 &&
+          _preferChildHeight != null &&
+          _preferChildHeight != 0) {
+        double height = (groupIndex + 1) * _preferGroupHeight! +
+            (index - groupIndex) * _preferChildHeight!;
+        _scrollController.jumpTo(height);
+      }
+
+      ///if group height prefer not set
+      else {
+        double deltaOffset = (_headerHeightProvider != null)
+            ? _headerHeightProvider!(groupIndex)
+            : 0;
+        await _scrollController.scrollToIndex(
+          index: index,
+          scrollSpeed: scrollSpeed,
+          curve: curve,
+          deltaOffset: -deltaOffset,
+        );
+      }
     }
   }
 }

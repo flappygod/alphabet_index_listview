@@ -121,6 +121,8 @@ class _MyHomePageState extends State<MyHomePage> {
           // footerView: Container(height: 120, color: Colors.red),
           stickHeader: true,
           dataList: generatedList!,
+          preferGroupHeight: 60,
+          preferChildHeight: 80,
           onGroupSelected: (int index) {
             if (kDebugMode) {
               print("Group$index");
