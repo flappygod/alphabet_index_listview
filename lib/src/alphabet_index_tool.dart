@@ -115,4 +115,18 @@ class AlphabetIndexTool {
     }
     return count;
   }
+
+  ///total group count
+  static int getItemTotalGroupCount(List<AlphabetIndexGroup> dataList) {
+    return dataList.length;
+  }
+
+  ///total child count
+  static int getItemTotalChildCount(List<AlphabetIndexGroup> dataList) {
+    int count = 0;
+    for (int s = 0; s < dataList.length; s++) {
+      count = count + dataList[s].dataList.length;
+    }
+    return count;
+  }
 }

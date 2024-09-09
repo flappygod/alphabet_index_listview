@@ -1,3 +1,3 @@
-## 1.0.14
+## 1.0.15
 
-1. Add prefer group height and prefer child height to adapt scroll speed -1
+1. Bugs fixes and merge inner provider for the listviews.

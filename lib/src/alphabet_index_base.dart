@@ -34,11 +34,65 @@ const List<String> kDefaultAlphabets = const [
 ///group scrolled
 typedef AlphabetIndexGroupScrolled = Function(int groupIndex);
 
-///provider
-typedef AlphabetHeaderScrollToProvider = int Function(int group, {int child});
+///provider  interface
+abstract class AlphabetHeaderProviderInterface {
+  ///index provider
+  int provideIndex(int group, {int child});
 
-///height provider
-typedef AlphabetHeaderHeightProvider = double Function(int group);
+  ///total index provider
+  int provideIndexTotalGroup();
+
+  ///total index provider
+  int provideIndexTotalChild();
+
+  ///height provider
+  double providerHeightHeader(int group);
+
+  ///total height provider
+  double providerHeightTotalList();
+}
+
+///provider
+class AlphabetHeaderProvider implements AlphabetHeaderProviderInterface {
+  final int Function(int group, {int child}) provideIndexFunc;
+  final int Function() provideIndexTotalGroupFunc;
+  final int Function() provideIndexTotalChildFunc;
+  final double Function(int group) providerHeightHeaderFunc;
+  final double Function() providerHeightTotalListFunc;
+
+  AlphabetHeaderProvider({
+    required this.provideIndexFunc,
+    required this.provideIndexTotalGroupFunc,
+    required this.provideIndexTotalChildFunc,
+    required this.providerHeightHeaderFunc,
+    required this.providerHeightTotalListFunc,
+  });
+
+  @override
+  int provideIndex(int group, {int child = 0}) {
+    return provideIndexFunc(group, child: child);
+  }
+
+  @override
+  int provideIndexTotalGroup() {
+    return provideIndexTotalGroupFunc();
+  }
+
+  @override
+  int provideIndexTotalChild() {
+    return provideIndexTotalChildFunc();
+  }
+
+  @override
+  double providerHeightHeader(int group) {
+    return providerHeightHeaderFunc(group);
+  }
+
+  @override
+  double providerHeightTotalList() {
+    return providerHeightTotalListFunc();
+  }
+}
 
 ///none bar
 AlphabetIndexGroupBuilder kTipsBarNone = (int groupIndex, String tag) {
