@@ -387,14 +387,52 @@ class _AlphabetHeaderSliverViewState<T>
     );
   }
 
+  ///get the list view render box
+  Offset? _getListViewOffset() {
+    ///get list render box
+    RenderBox? listRenderBox =
+        _scrollKey.currentContext?.findRenderObject() as RenderBox?;
+    return listRenderBox?.localToGlobal(const Offset(0.0, 0.0));
+  }
+
+  ///get the group item offset
+  Rect? _getGroupItemRect(int index) {
+    if (widget.controller._preferGroupHeight != null &&
+        widget.controller._preferChildHeight != null) {
+      ///calculate prefer height offset
+      double top = index * widget.controller._preferGroupHeight! +
+          (AlphabetIndexTool.getItemIndexFromGroupPos(widget.dataList, index) -
+                  index) *
+              widget.controller._preferChildHeight!;
+      return Rect.fromLTWH(
+        0,
+        top,
+        MediaQuery.of(context).size.width,
+        widget.controller._preferGroupHeight!,
+      );
+    } else {
+      ///get item data
+      int groupIndex =
+          AlphabetIndexTool.getItemIndexFromGroupPos(widget.dataList, index);
+      AnchorItemWrapperState? data =
+          widget.controller._scrollController.itemMap[groupIndex];
+      RenderBox? itemBox = data?.context.findRenderObject() as RenderBox?;
+      Offset? offset = itemBox?.localToGlobal(Offset(0.0, 0.0));
+      if (offset != null && itemBox != null) {
+        return Rect.fromLTWH(
+            offset.dx, offset.dy, itemBox.size.width, itemBox.size.height);
+      } else {
+        return null;
+      }
+    }
+  }
+
   ///refresh top stick
   void _refreshGroupPositions() {
     ///always calculate the header height
     if (widget.instabilityHeaderHeight) {
       ///get list render box
-      RenderBox? listRenderBox =
-          _scrollKey.currentContext?.findRenderObject() as RenderBox?;
-      Offset? listOffset = listRenderBox?.localToGlobal(const Offset(0.0, 0.0));
+      Offset? listOffset = _getListViewOffset();
       if (listOffset == null) {
         return;
       }
@@ -402,27 +440,20 @@ class _AlphabetHeaderSliverViewState<T>
       ///calculate group positions
       for (int s = 0; s < widget.dataList.length; s++) {
         ///get item data
-        int groupIndex =
-            AlphabetIndexTool.getItemIndexFromGroupPos(widget.dataList, s);
-        AnchorItemWrapperState? data =
-            widget.controller._scrollController.itemMap[groupIndex];
-        RenderBox? itemBox = data?.context.findRenderObject() as RenderBox?;
-        Offset? itemTopOffset = itemBox?.localToGlobal(Offset(0.0, 0.0));
+        Rect? itemGroupRect = _getGroupItemRect(s);
 
         ///calculate data
-        if (itemTopOffset != null) {
-          double scrollOffset = itemTopOffset.dy -
+        if (itemGroupRect != null) {
+          double scrollOffset = itemGroupRect.top -
               listOffset.dy +
               widget.controller._scrollController.position.pixels;
-          _groupPositionList[s] =
-              GroupPosition(scrollOffset, scrollOffset + itemBox!.size.height);
+          _groupPositionList[s] = GroupPosition(
+              scrollOffset, scrollOffset + itemGroupRect.size.height);
         }
       }
     } else {
       ///get list render box
-      RenderBox? listRenderBox =
-          _scrollKey.currentContext?.findRenderObject() as RenderBox?;
-      Offset? listOffset = listRenderBox?.localToGlobal(const Offset(0.0, 0.0));
+      Offset? listOffset = _getListViewOffset();
       if (listOffset == null) {
         return;
       }
@@ -445,21 +476,19 @@ class _AlphabetHeaderSliverViewState<T>
           continue;
         }
 
-        ///get item data
-        int groupIndex =
-            AlphabetIndexTool.getItemIndexFromGroupPos(widget.dataList, s);
-        AnchorItemWrapperState? data =
-            widget.controller._scrollController.itemMap[groupIndex];
-        RenderBox? itemBox = data?.context.findRenderObject() as RenderBox?;
-        Offset? itemTopOffset = itemBox?.localToGlobal(Offset(0.0, 0.0));
+        ///calculate group positions
+        for (int s = 0; s < widget.dataList.length; s++) {
+          ///get item data
+          Rect? itemGroupRect = _getGroupItemRect(s);
 
-        ///calculate data
-        if (itemTopOffset != null) {
-          double scrollOffset = itemTopOffset.dy -
-              listOffset.dy +
-              widget.controller._scrollController.position.pixels;
-          _groupPositionList[s] =
-              GroupPosition(scrollOffset, scrollOffset + itemBox!.size.height);
+          ///calculate data
+          if (itemGroupRect != null) {
+            double scrollOffset = itemGroupRect.top -
+                listOffset.dy +
+                widget.controller._scrollController.position.pixels;
+            _groupPositionList[s] = GroupPosition(
+                scrollOffset, scrollOffset + itemGroupRect.size.height);
+          }
         }
       }
     }
