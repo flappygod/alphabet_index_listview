@@ -44,13 +44,15 @@ class AlphabetHeaderListViewController<T> {
       return;
     }
 
+    ///get index
+    int index = _headerProvider!.provideIndex(groupIndex);
+
     ///group
     if (_preferGroupHeight != null &&
         _preferGroupHeight != 0 &&
         _preferChildHeight != null &&
         _preferChildHeight != 0) {
       ///get group index
-      int index = _headerProvider!.provideIndex(groupIndex);
       double maxHeight =
           _headerProvider!.provideIndexTotalGroup() * _preferGroupHeight! +
               _headerProvider!.provideIndexTotalChild() * _preferChildHeight! -
@@ -61,7 +63,6 @@ class AlphabetHeaderListViewController<T> {
       _headerProvider!.providerRefresh();
     } else {
       ///get group index
-      int index = _headerProvider!.provideIndex(groupIndex);
       await _scrollController.scrollToIndex(
         index: index,
         scrollSpeed: scrollSpeed,
@@ -96,8 +97,7 @@ class AlphabetHeaderListViewController<T> {
         _preferChildHeight != null &&
         _preferChildHeight != 0 &&
         scrollSpeed <= 0) {
-      ///get group index
-      int index = _headerProvider!.provideIndex(groupIndex);
+      ///get total index
       double maxHeight =
           _headerProvider!.provideIndexTotalGroup() * _preferGroupHeight! +
               _headerProvider!.provideIndexTotalChild() * _preferChildHeight! -

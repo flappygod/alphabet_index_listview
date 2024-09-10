@@ -45,14 +45,15 @@ class AlphabetHeaderSliverViewController<T> {
       return;
     }
 
+    ///get group index
+    int index = _headerProvider!.provideIndex(groupIndex);
+
     ///if group height prefer set
     if (_preferGroupHeight != null &&
         _preferGroupHeight != 0 &&
         _preferChildHeight != null &&
         _preferChildHeight != 0 &&
         scrollSpeed <= 0) {
-      ///get group index
-      int index = _headerProvider!.provideIndex(groupIndex);
       double maxHeight =
           _headerProvider!.provideIndexTotalGroup() * _preferGroupHeight! +
               _headerProvider!.provideIndexTotalChild() * _preferChildHeight! -
@@ -65,8 +66,6 @@ class AlphabetHeaderSliverViewController<T> {
 
     ///if group height prefer not set
     else {
-      ///get group index
-      int index = _headerProvider!.provideIndex(groupIndex);
       await _scrollController.scrollToIndex(
         index: index,
         scrollSpeed: scrollSpeed,
