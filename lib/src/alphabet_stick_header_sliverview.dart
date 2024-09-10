@@ -60,7 +60,7 @@ class AlphabetHeaderSliverViewController<T> {
       double height = groupIndex * _preferGroupHeight! +
           (index - groupIndex - 1) * _preferChildHeight!;
       _scrollController.jumpTo(min(height, maxHeight));
-      _scrollController.notifyListeners();
+      _headerProvider!.providerRefresh();
     }
 
     ///if group height prefer not set
@@ -105,7 +105,7 @@ class AlphabetHeaderSliverViewController<T> {
       double height = groupIndex * _preferGroupHeight! +
           (index - groupIndex - 1) * _preferChildHeight!;
       _scrollController.jumpTo(min(height, maxHeight));
-      _scrollController.notifyListeners();
+      _headerProvider!.providerRefresh();
     }
 
     ///if group height prefer not set
@@ -261,6 +261,11 @@ class _AlphabetHeaderSliverViewState<T>
       ///provide total list height
       providerHeightTotalListFunc: () {
         return _scrollKey.currentContext?.size?.height ?? 0;
+      },
+
+      ///provide refresh func
+      providerRefreshFunc: () {
+        _refreshGroupAndOffset();
       },
     );
     widget.controller._headerProvider = _headerProvider;
@@ -471,7 +476,7 @@ class _AlphabetHeaderSliverViewState<T>
     /// current group
     int currentIndex = -1;
     for (int s = 0; s < widget.dataList.length; s++) {
-      //calculated offset
+      ///calculated offset
       GroupPosition? positionFormer = _groupPositionList[s - 1];
       GroupPosition? positionCurrent = _groupPositionList[s];
       if (positionFormer != null && positionCurrent != null) {
@@ -483,7 +488,8 @@ class _AlphabetHeaderSliverViewState<T>
           break;
         }
       }
-      //calculated current group index
+
+      ///calculated current group index
       if (positionCurrent != null) {
         if (scrollOffset >= positionCurrent.startPosition) {
           currentIndex = s;

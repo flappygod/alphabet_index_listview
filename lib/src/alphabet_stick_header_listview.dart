@@ -58,7 +58,7 @@ class AlphabetHeaderListViewController<T> {
       double height = groupIndex * _preferGroupHeight! +
           (index - groupIndex - 1) * _preferChildHeight!;
       _scrollController.jumpTo(min(height, maxHeight));
-      _scrollController.notifyListeners();
+      _headerProvider!.providerRefresh();
     } else {
       ///get group index
       int index = _headerProvider!.provideIndex(groupIndex);
@@ -105,7 +105,7 @@ class AlphabetHeaderListViewController<T> {
       double height = groupIndex * _preferGroupHeight! +
           (index - groupIndex - 1) * _preferChildHeight!;
       _scrollController.jumpTo(min(height, maxHeight));
-      _scrollController.notifyListeners();
+      _headerProvider!.providerRefresh();
     }
 
     ///if group height prefer not set
@@ -213,47 +213,52 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
   void _initControllers() {
     ///set index provider for controller to known which index to jumpc
     _headerProvider = AlphabetHeaderProvider(
-      ///index provider
-      provideIndexFunc: (int group, {int? child}) {
-        if (child == null) {
-          return AlphabetIndexTool.getItemIndexFromGroupPos(
-              widget.dataList, group);
-        } else {
-          return AlphabetIndexTool.getItemIndexFromGroupPos(
-                  widget.dataList, group) +
-              child +
-              1;
-        }
-      },
 
-      ///total group count
-      provideIndexTotalGroupFunc: () {
-        return AlphabetIndexTool.getItemTotalGroupCount(widget.dataList);
-      },
+        ///index provider
+        provideIndexFunc: (int group, {int? child}) {
+      if (child == null) {
+        return AlphabetIndexTool.getItemIndexFromGroupPos(
+            widget.dataList, group);
+      } else {
+        return AlphabetIndexTool.getItemIndexFromGroupPos(
+                widget.dataList, group) +
+            child +
+            1;
+      }
+    },
 
-      ///total child count
-      provideIndexTotalChildFunc: () {
-        return AlphabetIndexTool.getItemTotalChildCount(widget.dataList);
-      },
+        ///total group count
+        provideIndexTotalGroupFunc: () {
+      return AlphabetIndexTool.getItemTotalGroupCount(widget.dataList);
+    },
 
-      ///provide group height
-      providerHeightHeaderFunc: (group) {
-        GroupPosition? groupPosition = _groupPositionList[group];
-        if (groupPosition != null) {
-          return groupPosition.endPosition - groupPosition.startPosition;
-        }
-        GroupPosition? firstOne = _groupPositionList[0];
-        if (firstOne != null) {
-          return firstOne.endPosition - firstOne.startPosition;
-        }
-        return _headerKey.currentContext?.size?.height ?? 0;
-      },
+        ///total child count
+        provideIndexTotalChildFunc: () {
+      return AlphabetIndexTool.getItemTotalChildCount(widget.dataList);
+    },
 
-      ///provide total list height
-      providerHeightTotalListFunc: () {
-        return _scrollKey.currentContext?.size?.height ?? 0;
-      },
-    );
+        ///provide group height
+        providerHeightHeaderFunc: (group) {
+      GroupPosition? groupPosition = _groupPositionList[group];
+      if (groupPosition != null) {
+        return groupPosition.endPosition - groupPosition.startPosition;
+      }
+      GroupPosition? firstOne = _groupPositionList[0];
+      if (firstOne != null) {
+        return firstOne.endPosition - firstOne.startPosition;
+      }
+      return _headerKey.currentContext?.size?.height ?? 0;
+    },
+
+        ///provide total list height
+        providerHeightTotalListFunc: () {
+      return _scrollKey.currentContext?.size?.height ?? 0;
+    },
+
+        ///provide refresh func
+        providerRefreshFunc: () {
+      _refreshGroupAndOffset();
+    });
     widget.controller._headerProvider = _headerProvider;
 
     ///update frame and calculate all groups position if need

@@ -1,3 +1,3 @@
-## 1.0.16
+## 1.0.17
 
-1. Bugs fixes and change the default scroll speed.
+1. Fix a bug when jump .
