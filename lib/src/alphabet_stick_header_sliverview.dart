@@ -53,12 +53,10 @@ class AlphabetHeaderSliverViewController<T> {
         scrollSpeed <= 0) {
       ///get group index
       int index = _headerProvider!.provideIndex(groupIndex);
-      double maxHeight =
-          _headerProvider!.provideIndexTotalGroup() * _preferGroupHeight! +
-              _headerProvider!.provideIndexTotalChild() * _preferChildHeight! -
-              _headerProvider!.providerHeightTotalList();
-      double height = groupIndex * _preferGroupHeight! +
-          (index - groupIndex - 1) * _preferChildHeight!;
+      double maxHeight = _headerProvider!.provideIndexTotalGroup() * _preferGroupHeight! +
+          _headerProvider!.provideIndexTotalChild() * _preferChildHeight! -
+          _headerProvider!.providerHeightTotalList();
+      double height = groupIndex * _preferGroupHeight! + (index - groupIndex - 1) * _preferChildHeight!;
       _scrollController.jumpTo(min(height, maxHeight));
       _headerProvider!.providerRefresh();
     }
@@ -98,12 +96,10 @@ class AlphabetHeaderSliverViewController<T> {
         scrollSpeed <= 0) {
       ///get group index
       int index = _headerProvider!.provideIndex(groupIndex);
-      double maxHeight =
-          _headerProvider!.provideIndexTotalGroup() * _preferGroupHeight! +
-              _headerProvider!.provideIndexTotalChild() * _preferChildHeight! -
-              _headerProvider!.providerHeightTotalList();
-      double height = groupIndex * _preferGroupHeight! +
-          (index - groupIndex - 1) * _preferChildHeight!;
+      double maxHeight = _headerProvider!.provideIndexTotalGroup() * _preferGroupHeight! +
+          _headerProvider!.provideIndexTotalChild() * _preferChildHeight! -
+          _headerProvider!.providerHeightTotalList();
+      double height = groupIndex * _preferGroupHeight! + (index - groupIndex - 1) * _preferChildHeight!;
       _scrollController.jumpTo(min(height, maxHeight));
       _headerProvider!.providerRefresh();
     }
@@ -193,11 +189,9 @@ class AlphabetHeaderSliverView<T> extends StatefulWidget {
 }
 
 ///group list view state
-class _AlphabetHeaderSliverViewState<T>
-    extends State<AlphabetHeaderSliverView<T>> {
+class _AlphabetHeaderSliverViewState<T> extends State<AlphabetHeaderSliverView<T>> {
   ///unique str
-  final String _uniqueStr =
-      "alphabet_index_list_view_stick_header_index_prefix";
+  final String _uniqueStr = "alphabet_index_list_view_stick_header_index_prefix";
 
   ///scroll key
   final GlobalKey _scrollKey = GlobalKey();
@@ -209,8 +203,7 @@ class _AlphabetHeaderSliverViewState<T>
   late VoidCallback _frameUpdateListener;
 
   ///header controller
-  final AlphabetHeaderListViewGroupController _headerController =
-      AlphabetHeaderListViewGroupController();
+  final AlphabetHeaderListViewGroupController _headerController = AlphabetHeaderListViewGroupController();
 
   ///header key
   final GlobalKey _headerKey = GlobalKey();
@@ -225,13 +218,9 @@ class _AlphabetHeaderSliverViewState<T>
       ///index provider
       provideIndexFunc: (int group, {int? child}) {
         if (child == null) {
-          return AlphabetIndexTool.getItemIndexFromGroupPos(
-              widget.dataList, group);
+          return AlphabetIndexTool.getItemIndexFromGroupPos(widget.dataList, group);
         } else {
-          return AlphabetIndexTool.getItemIndexFromGroupPos(
-                  widget.dataList, group) +
-              child +
-              1;
+          return AlphabetIndexTool.getItemIndexFromGroupPos(widget.dataList, group) + child + 1;
         }
       },
 
@@ -353,17 +342,14 @@ class _AlphabetHeaderSliverViewState<T>
             itemBuilder: (context, index) {
               Widget indexItem;
               if (AlphabetIndexTool.isItemIndexGroup(widget.dataList, index)) {
-                int groupIndex = AlphabetIndexTool.getItemIndexGroupPos(
-                    widget.dataList, index);
+                int groupIndex = AlphabetIndexTool.getItemIndexGroupPos(widget.dataList, index);
                 indexItem = widget.groupBuilder(
                   groupIndex,
                   widget.dataList[groupIndex].tag,
                 );
               } else {
-                int groupIndex = AlphabetIndexTool.getItemIndexGroupPos(
-                    widget.dataList, index);
-                int childIndex = AlphabetIndexTool.getItemIndexChildPos(
-                    widget.dataList, index);
+                int groupIndex = AlphabetIndexTool.getItemIndexGroupPos(widget.dataList, index);
+                int childIndex = AlphabetIndexTool.getItemIndexChildPos(widget.dataList, index);
                 AlphabetIndexGroup<T> group = widget.dataList[groupIndex];
                 indexItem = widget.childBuilder(
                   groupIndex,
@@ -390,20 +376,16 @@ class _AlphabetHeaderSliverViewState<T>
   ///get the list view render box
   Offset? _getListViewOffset() {
     ///get list render box
-    RenderBox? listRenderBox =
-        _scrollKey.currentContext?.findRenderObject() as RenderBox?;
+    RenderBox? listRenderBox = _scrollKey.currentContext?.findRenderObject() as RenderBox?;
     return listRenderBox?.localToGlobal(const Offset(0.0, 0.0));
   }
 
   ///get the group item offset
   Rect? _getGroupItemRect(int index) {
-    if (widget.controller._preferGroupHeight != null &&
-        widget.controller._preferChildHeight != null) {
+    if (widget.controller._preferGroupHeight != null && widget.controller._preferChildHeight != null) {
       ///calculate prefer height offset
       double top = index * widget.controller._preferGroupHeight! +
-          (AlphabetIndexTool.getItemIndexFromGroupPos(widget.dataList, index) -
-                  index) *
-              widget.controller._preferChildHeight!;
+          (AlphabetIndexTool.getItemIndexFromGroupPos(widget.dataList, index) - index) * widget.controller._preferChildHeight!;
       return Rect.fromLTWH(
         0,
         top,
@@ -412,15 +394,17 @@ class _AlphabetHeaderSliverViewState<T>
       );
     } else {
       ///get item data
-      int groupIndex =
-          AlphabetIndexTool.getItemIndexFromGroupPos(widget.dataList, index);
-      AnchorItemWrapperState? data =
-          widget.controller._scrollController.itemMap[groupIndex];
+      int groupIndex = AlphabetIndexTool.getItemIndexFromGroupPos(widget.dataList, index);
+      AnchorItemWrapperState? data = widget.controller._scrollController.itemMap[groupIndex];
       RenderBox? itemBox = data?.context.findRenderObject() as RenderBox?;
       Offset? offset = itemBox?.localToGlobal(Offset(0.0, 0.0));
       if (offset != null && itemBox != null) {
         return Rect.fromLTWH(
-            offset.dx, offset.dy, itemBox.size.width, itemBox.size.height);
+          offset.dx,
+          offset.dy - (_getListViewOffset()?.dy ?? 0),
+          itemBox.size.width,
+          itemBox.size.height,
+        );
       } else {
         return null;
       }
@@ -444,11 +428,8 @@ class _AlphabetHeaderSliverViewState<T>
 
         ///calculate data
         if (itemGroupRect != null) {
-          double scrollOffset = itemGroupRect.top -
-              listOffset.dy +
-              widget.controller._scrollController.position.pixels;
-          _groupPositionList[s] = GroupPosition(
-              scrollOffset, scrollOffset + itemGroupRect.size.height);
+          double scrollOffset = itemGroupRect.top + widget.controller._scrollController.position.pixels;
+          _groupPositionList[s] = GroupPosition(scrollOffset, scrollOffset + itemGroupRect.size.height);
         }
       }
     } else {
@@ -483,11 +464,8 @@ class _AlphabetHeaderSliverViewState<T>
 
           ///calculate data
           if (itemGroupRect != null) {
-            double scrollOffset = itemGroupRect.top -
-                listOffset.dy +
-                widget.controller._scrollController.position.pixels;
-            _groupPositionList[s] = GroupPosition(
-                scrollOffset, scrollOffset + itemGroupRect.size.height);
+            double scrollOffset = itemGroupRect.top + widget.controller._scrollController.position.pixels;
+            _groupPositionList[s] = GroupPosition(scrollOffset, scrollOffset + itemGroupRect.size.height);
           }
         }
       }
@@ -509,8 +487,7 @@ class _AlphabetHeaderSliverViewState<T>
       GroupPosition? positionFormer = _groupPositionList[s - 1];
       GroupPosition? positionCurrent = _groupPositionList[s];
       if (positionFormer != null && positionCurrent != null) {
-        double offsetStart =
-            positionCurrent.startPosition - positionFormer.height;
+        double offsetStart = positionCurrent.startPosition - positionFormer.height;
         double offsetEnd = positionCurrent.startPosition;
         if (scrollOffset > offsetStart && scrollOffset < offsetEnd) {
           currentOffset = scrollOffset - offsetStart;
@@ -530,9 +507,7 @@ class _AlphabetHeaderSliverViewState<T>
     }
 
     ///group index changed
-    if (_headerController.currentGroup != currentIndex &&
-        widget.onGroupSelected != null &&
-        currentIndex != -1) {
+    if (_headerController.currentGroup != currentIndex && widget.onGroupSelected != null && currentIndex != -1) {
       widget.onGroupSelected!(currentIndex);
     }
 
