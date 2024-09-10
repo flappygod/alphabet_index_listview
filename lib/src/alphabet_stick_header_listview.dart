@@ -104,6 +104,7 @@ class AlphabetHeaderListViewController<T> {
       double height = groupIndex * _preferGroupHeight! +
           (index - groupIndex - 1) * _preferChildHeight!;
       _scrollController.jumpTo(min(height, maxHeight));
+      _scrollController.notifyListeners();
     }
 
     ///if group height prefer not set
