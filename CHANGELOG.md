@@ -1,3 +1,3 @@
-## 1.0.18
+## 1.0.19
 
-1. Fix a bug that can't jump to child sometime.
+1. Fix a bug that jump to an negative position.
