@@ -37,7 +37,7 @@ typedef AlphabetIndexGroupScrolled = Function(int groupIndex);
 ///provider  interface
 abstract class AlphabetHeaderProviderInterface {
   ///index provider
-  int provideIndex(int group, {int child});
+  int provideIndex(int group, {int? child});
 
   ///total index provider
   int provideIndexTotalGroup();
@@ -60,7 +60,7 @@ abstract class AlphabetHeaderProviderInterface {
 
 ///provider
 class AlphabetHeaderProvider implements AlphabetHeaderProviderInterface {
-  final int Function(int group, {int child}) provideIndexFunc;
+  final int Function(int group, {int? child}) provideIndexFunc;
   final int Function() provideIndexTotalGroupFunc;
   final int Function() provideIndexTotalChildFunc;
   final double Function(int group) providerHeightGroupFunc;
@@ -79,7 +79,7 @@ class AlphabetHeaderProvider implements AlphabetHeaderProviderInterface {
   });
 
   @override
-  int provideIndex(int group, {int child = 0}) {
+  int provideIndex(int group, {int? child}) {
     return provideIndexFunc(group, child: child);
   }
 
