@@ -120,7 +120,7 @@ class AlphabetHeaderProvider implements AlphabetHeaderProviderInterface {
 
   @override
   double provideHeightBottomPadding() {
-    throw UnimplementedError();
+    return provideHeightBottomPaddingFunc();
   }
 }
 
