@@ -30,6 +30,7 @@ class AlphabetHeaderListViewController<T> {
     AnchorScrollController? scrollController,
     double? preferGroupHeight,
     double? preferChildHeight,
+    double preferHeaderHeight = 0,
   })  : _preferGroupHeight = preferGroupHeight,
         _preferChildHeight = preferChildHeight,
         _scrollController = scrollController ?? AnchorScrollController();
@@ -51,16 +52,20 @@ class AlphabetHeaderListViewController<T> {
     if (_preferGroupHeight != null &&
         _preferGroupHeight != 0 &&
         _preferChildHeight != null &&
-        _preferChildHeight != 0) {
+        _preferChildHeight != 0 &&
+        scrollSpeed <= 0) {
       ///get group index
       double maxHeight =
           _headerProvider!.provideIndexTotalGroup() * _preferGroupHeight! +
               _headerProvider!.provideIndexTotalChild() * _preferChildHeight! -
-              _headerProvider!.providerHeightTotalList();
+              _headerProvider!.provideHeightTotalList() +
+              _headerProvider!.provideHeightHeaderView() +
+              _headerProvider!.provideHeightTopPadding();
       double height = groupIndex * _preferGroupHeight! +
-          (index - groupIndex - 1) * _preferChildHeight!;
+          (index - groupIndex - 1) * _preferChildHeight! +
+          _headerProvider!.provideHeightHeaderView() +
+          _headerProvider!.provideHeightTopPadding();
       _scrollController.jumpTo(min(height, max(maxHeight, 0)));
-      _headerProvider!.providerRefresh();
     } else {
       ///get group index
       await _scrollController.scrollToIndex(
@@ -101,16 +106,19 @@ class AlphabetHeaderListViewController<T> {
       double maxHeight =
           _headerProvider!.provideIndexTotalGroup() * _preferGroupHeight! +
               _headerProvider!.provideIndexTotalChild() * _preferChildHeight! -
-              _headerProvider!.providerHeightTotalList();
+              _headerProvider!.provideHeightTotalList() +
+              _headerProvider!.provideHeightHeaderView() +
+              _headerProvider!.provideHeightTopPadding();
       double height = groupIndex * _preferGroupHeight! +
-          (index - groupIndex - 1) * _preferChildHeight!;
+          (index - groupIndex - 1) * _preferChildHeight! +
+          _headerProvider!.provideHeightHeaderView() +
+          _headerProvider!.provideHeightTopPadding();
       _scrollController.jumpTo(min(height, max(maxHeight, 0)));
-      _headerProvider!.providerRefresh();
     }
 
     ///if group height prefer not set
     else {
-      double deltaOffset = _headerProvider!.providerHeightHeader(groupIndex);
+      double deltaOffset = _headerProvider!.provideHeightGroup(groupIndex);
       await _scrollController.scrollToIndex(
         index: index,
         scrollSpeed: scrollSpeed,
@@ -193,6 +201,9 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
   ///scroll key
   final GlobalKey _scrollKey = GlobalKey();
 
+  ///header key
+  final GlobalKey _groupKey = GlobalKey();
+
   ///provider
   late AlphabetHeaderProviderInterface _headerProvider;
 
@@ -203,9 +214,6 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
   final AlphabetHeaderListViewGroupController _headerController =
       AlphabetHeaderListViewGroupController();
 
-  ///header key
-  final GlobalKey _headerKey = GlobalKey();
-
   ///calculated group position list
   final Map<int, GroupPosition> _groupPositionList = {};
 
@@ -213,52 +221,57 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
   void _initControllers() {
     ///set index provider for controller to known which index to jumpc
     _headerProvider = AlphabetHeaderProvider(
+      ///index provider
+      provideIndexFunc: (int group, {int? child}) {
+        if (child == null) {
+          return AlphabetIndexTool.getItemIndexFromGroupPos(
+              widget.dataList, group);
+        } else {
+          return AlphabetIndexTool.getItemIndexFromGroupPos(
+                  widget.dataList, group) +
+              child +
+              1;
+        }
+      },
 
-        ///index provider
-        provideIndexFunc: (int group, {int? child}) {
-      if (child == null) {
-        return AlphabetIndexTool.getItemIndexFromGroupPos(
-            widget.dataList, group);
-      } else {
-        return AlphabetIndexTool.getItemIndexFromGroupPos(
-                widget.dataList, group) +
-            child +
-            1;
-      }
-    },
+      ///total group count
+      provideIndexTotalGroupFunc: () {
+        return AlphabetIndexTool.getItemTotalGroupCount(widget.dataList);
+      },
 
-        ///total group count
-        provideIndexTotalGroupFunc: () {
-      return AlphabetIndexTool.getItemTotalGroupCount(widget.dataList);
-    },
+      ///total child count
+      provideIndexTotalChildFunc: () {
+        return AlphabetIndexTool.getItemTotalChildCount(widget.dataList);
+      },
 
-        ///total child count
-        provideIndexTotalChildFunc: () {
-      return AlphabetIndexTool.getItemTotalChildCount(widget.dataList);
-    },
+      ///provide group height
+      providerHeightGroupFunc: (group) {
+        GroupPosition? groupPosition = _groupPositionList[group];
+        if (groupPosition != null) {
+          return groupPosition.endPosition - groupPosition.startPosition;
+        }
+        GroupPosition? firstOne = _groupPositionList[0];
+        if (firstOne != null) {
+          return firstOne.endPosition - firstOne.startPosition;
+        }
+        return _groupKey.currentContext?.size?.height ?? 0;
+      },
 
-        ///provide group height
-        providerHeightHeaderFunc: (group) {
-      GroupPosition? groupPosition = _groupPositionList[group];
-      if (groupPosition != null) {
-        return groupPosition.endPosition - groupPosition.startPosition;
-      }
-      GroupPosition? firstOne = _groupPositionList[0];
-      if (firstOne != null) {
-        return firstOne.endPosition - firstOne.startPosition;
-      }
-      return _headerKey.currentContext?.size?.height ?? 0;
-    },
+      ///provide total list height
+      providerHeightTotalListFunc: () {
+        return _scrollKey.currentContext?.size?.height ?? 0;
+      },
 
-        ///provide total list height
-        providerHeightTotalListFunc: () {
-      return _scrollKey.currentContext?.size?.height ?? 0;
-    },
+      ///provide header height
+      provideHeightHeaderViewFunc: () {
+        return 0;
+      },
 
-        ///provide refresh func
-        providerRefreshFunc: () {
-      _refreshGroupAndOffset();
-    });
+      ///provide refresh func
+      provideHeightTopPaddingFunc: () {
+        return widget.padding?.top ?? 0;
+      },
+    );
     widget.controller._headerProvider = _headerProvider;
 
     ///update frame and calculate all groups position if need
@@ -300,7 +313,7 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
         children: [
           _buildListView(),
           AlphabetHeaderListViewStickView(
-            key: _headerKey,
+            key: _groupKey,
             stickOffsetController: _headerController,
             scrollCurrentOffset: widget.padding?.top ?? 0,
             groupBuilder: widget.groupBuilder,
@@ -386,9 +399,13 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
           (AlphabetIndexTool.getItemIndexFromGroupPos(widget.dataList, index) -
                   index) *
               widget.controller._preferChildHeight!;
+
+      ///offset
+      double offset = (widget.padding?.top ?? 0);
+
       return Rect.fromLTWH(
         0,
-        top,
+        top + offset,
         MediaQuery.of(context).size.width,
         widget.controller._preferGroupHeight!,
       );

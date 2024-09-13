@@ -46,13 +46,16 @@ abstract class AlphabetHeaderProviderInterface {
   int provideIndexTotalChild();
 
   ///height provider
-  double providerHeightHeader(int group);
+  double provideHeightGroup(int group);
 
   ///total height provider
-  double providerHeightTotalList();
+  double provideHeightTotalList();
 
-  ///provide refresh
-  void providerRefresh();
+  ///total height header view
+  double provideHeightHeaderView();
+
+  ///provider top padding
+  double provideHeightTopPadding();
 }
 
 ///provider
@@ -60,17 +63,19 @@ class AlphabetHeaderProvider implements AlphabetHeaderProviderInterface {
   final int Function(int group, {int child}) provideIndexFunc;
   final int Function() provideIndexTotalGroupFunc;
   final int Function() provideIndexTotalChildFunc;
-  final double Function(int group) providerHeightHeaderFunc;
+  final double Function(int group) providerHeightGroupFunc;
   final double Function() providerHeightTotalListFunc;
-  final void Function() providerRefreshFunc;
+  final double Function() provideHeightHeaderViewFunc;
+  final double Function() provideHeightTopPaddingFunc;
 
   AlphabetHeaderProvider({
     required this.provideIndexFunc,
     required this.provideIndexTotalGroupFunc,
     required this.provideIndexTotalChildFunc,
-    required this.providerHeightHeaderFunc,
+    required this.providerHeightGroupFunc,
     required this.providerHeightTotalListFunc,
-    required this.providerRefreshFunc,
+    required this.provideHeightHeaderViewFunc,
+    required this.provideHeightTopPaddingFunc,
   });
 
   @override
@@ -89,18 +94,23 @@ class AlphabetHeaderProvider implements AlphabetHeaderProviderInterface {
   }
 
   @override
-  double providerHeightHeader(int group) {
-    return providerHeightHeaderFunc(group);
+  double provideHeightGroup(int group) {
+    return providerHeightGroupFunc(group);
   }
 
   @override
-  double providerHeightTotalList() {
+  double provideHeightTotalList() {
     return providerHeightTotalListFunc();
   }
 
   @override
-  void providerRefresh() {
-    providerRefreshFunc();
+  double provideHeightHeaderView() {
+    throw provideHeightHeaderViewFunc();
+  }
+
+  @override
+  double provideHeightTopPadding() {
+    return provideHeightTopPaddingFunc();
   }
 }
 

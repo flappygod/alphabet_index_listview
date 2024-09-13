@@ -31,6 +31,7 @@ class AlphabetHeaderSliverViewController<T> {
     AnchorScrollController? anchorController,
     double? preferGroupHeight,
     double? preferChildHeight,
+    double preferHeaderHeight = 0,
   })  : _preferGroupHeight = preferGroupHeight,
         _preferChildHeight = preferChildHeight,
         _scrollController = anchorController ?? AnchorScrollController();
@@ -54,14 +55,18 @@ class AlphabetHeaderSliverViewController<T> {
         _preferChildHeight != null &&
         _preferChildHeight != 0 &&
         scrollSpeed <= 0) {
+      ///get group index
       double maxHeight =
           _headerProvider!.provideIndexTotalGroup() * _preferGroupHeight! +
               _headerProvider!.provideIndexTotalChild() * _preferChildHeight! -
-              _headerProvider!.providerHeightTotalList();
+              _headerProvider!.provideHeightTotalList() +
+              _headerProvider!.provideHeightHeaderView() +
+              _headerProvider!.provideHeightTopPadding();
       double height = groupIndex * _preferGroupHeight! +
-          (index - groupIndex - 1) * _preferChildHeight!;
+          (index - groupIndex - 1) * _preferChildHeight! +
+          _headerProvider!.provideHeightHeaderView() +
+          _headerProvider!.provideHeightTopPadding();
       _scrollController.jumpTo(min(height, max(maxHeight, 0)));
-      _headerProvider!.providerRefresh();
     }
 
     ///if group height prefer not set
@@ -95,21 +100,23 @@ class AlphabetHeaderSliverViewController<T> {
         _preferChildHeight != null &&
         _preferChildHeight != 0 &&
         scrollSpeed <= 0) {
-      ///get group index
-      int index = _headerProvider!.provideIndex(groupIndex);
+      ///get total index
       double maxHeight =
           _headerProvider!.provideIndexTotalGroup() * _preferGroupHeight! +
               _headerProvider!.provideIndexTotalChild() * _preferChildHeight! -
-              _headerProvider!.providerHeightTotalList();
+              _headerProvider!.provideHeightTotalList() +
+              _headerProvider!.provideHeightHeaderView() +
+              _headerProvider!.provideHeightTopPadding();
       double height = groupIndex * _preferGroupHeight! +
-          (index - groupIndex - 1) * _preferChildHeight!;
+          (index - groupIndex - 1) * _preferChildHeight! +
+          _headerProvider!.provideHeightHeaderView() +
+          _headerProvider!.provideHeightTopPadding();
       _scrollController.jumpTo(min(height, max(maxHeight, 0)));
-      _headerProvider!.providerRefresh();
     }
 
     ///if group height prefer not set
     else {
-      double deltaOffset = _headerProvider!.providerHeightHeader(groupIndex);
+      double deltaOffset = _headerProvider!.provideHeightGroup(groupIndex);
       await _scrollController.scrollToIndex(
         index: index,
         scrollSpeed: scrollSpeed,
@@ -201,6 +208,12 @@ class _AlphabetHeaderSliverViewState<T>
   ///scroll key
   final GlobalKey _scrollKey = GlobalKey();
 
+  ///group key
+  final GlobalKey _groupKey = GlobalKey();
+
+  ///header key
+  final GlobalKey _headerKey = GlobalKey();
+
   ///provider
   late AlphabetHeaderProviderInterface _headerProvider;
 
@@ -210,9 +223,6 @@ class _AlphabetHeaderSliverViewState<T>
   ///header controller
   final AlphabetHeaderListViewGroupController _headerController =
       AlphabetHeaderListViewGroupController();
-
-  ///header key
-  final GlobalKey _headerKey = GlobalKey();
 
   ///calculated group position list
   final Map<int, GroupPosition> _groupPositionList = {};
@@ -245,7 +255,7 @@ class _AlphabetHeaderSliverViewState<T>
       },
 
       ///provide group height
-      providerHeightHeaderFunc: (group) {
+      providerHeightGroupFunc: (group) {
         GroupPosition? groupPosition = _groupPositionList[group];
         if (groupPosition != null) {
           return groupPosition.endPosition - groupPosition.startPosition;
@@ -254,7 +264,7 @@ class _AlphabetHeaderSliverViewState<T>
         if (firstOne != null) {
           return firstOne.endPosition - firstOne.startPosition;
         }
-        return _headerKey.currentContext?.size?.height ?? 0;
+        return _groupKey.currentContext?.size?.height ?? 0;
       },
 
       ///provide total list height
@@ -262,9 +272,14 @@ class _AlphabetHeaderSliverViewState<T>
         return _scrollKey.currentContext?.size?.height ?? 0;
       },
 
+      ///provide header height
+      provideHeightHeaderViewFunc: () {
+        return _getHeaderHeight();
+      },
+
       ///provide refresh func
-      providerRefreshFunc: () {
-        _refreshGroupAndOffset();
+      provideHeightTopPaddingFunc: () {
+        return widget.padding?.top ?? 0;
       },
     );
     widget.controller._headerProvider = _headerProvider;
@@ -274,6 +289,10 @@ class _AlphabetHeaderSliverViewState<T>
       _refreshGroupPositions();
     };
     UpdateFrameTool.instance.addFrameListener(_frameUpdateListener);
+  }
+
+  double _getHeaderHeight() {
+    return _headerKey.currentContext?.size?.height ?? 0;
   }
 
   ///init state
@@ -308,7 +327,7 @@ class _AlphabetHeaderSliverViewState<T>
         children: [
           _buildListView(),
           AlphabetHeaderListViewStickView(
-            key: _headerKey,
+            key: _groupKey,
             stickOffsetController: _headerController,
             scrollCurrentOffset: widget.padding?.top ?? 0,
             groupBuilder: widget.groupBuilder,
@@ -341,6 +360,7 @@ class _AlphabetHeaderSliverViewState<T>
         restorationId: widget.restorationId,
         slivers: [
           SliverToBoxAdapter(
+            key: _headerKey,
             child: widget.headerView,
           ),
           SliverList.builder(
@@ -403,9 +423,12 @@ class _AlphabetHeaderSliverViewState<T>
           (AlphabetIndexTool.getItemIndexFromGroupPos(widget.dataList, index) -
                   index) *
               widget.controller._preferChildHeight!;
+
+      ///offset
+      double offset = _getHeaderHeight() + (widget.padding?.top ?? 0);
       return Rect.fromLTWH(
         0,
-        top,
+        top + offset,
         MediaQuery.of(context).size.width,
         widget.controller._preferGroupHeight!,
       );

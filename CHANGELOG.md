@@ -1,3 +1,3 @@
-## 1.0.19
+## 1.0.20
 
-1. Fix a bug that jump to an negative position.
+1. Fix a bug ,add header prefer height and adapt list view top padding.

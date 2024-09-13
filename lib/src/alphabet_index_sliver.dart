@@ -61,6 +61,7 @@ class AlphabetIndexSliverView<T> extends StatefulWidget {
 
   final double? preferGroupHeight;
   final double? preferChildHeight;
+  final double preferHeaderHeight;
 
   //index bar list view
   const AlphabetIndexSliverView({
@@ -93,6 +94,7 @@ class AlphabetIndexSliverView<T> extends StatefulWidget {
     this.indexedScrollSpeed = -1,
     this.preferGroupHeight,
     this.preferChildHeight,
+    this.preferHeaderHeight = 0,
   });
 
   @override
@@ -117,6 +119,7 @@ class _AlphabetIndexSliverViewState<T>
         AlphabetHeaderSliverViewController(
           preferGroupHeight: widget.preferGroupHeight,
           preferChildHeight: widget.preferChildHeight,
+          preferHeaderHeight: widget.preferHeaderHeight,
         );
     super.initState();
   }
