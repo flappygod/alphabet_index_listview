@@ -360,8 +360,10 @@ class _AlphabetHeaderSliverViewState<T>
         restorationId: widget.restorationId,
         slivers: [
           SliverToBoxAdapter(
-            key: _headerKey,
-            child: widget.headerView,
+            child: SizedBox(
+              key: _headerKey,
+              child: widget.headerView,
+            ),
           ),
           SliverList.builder(
             itemCount: AlphabetIndexTool.getItemIndexCount(widget.dataList),
