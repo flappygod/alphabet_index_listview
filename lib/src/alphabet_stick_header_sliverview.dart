@@ -256,7 +256,7 @@ class _AlphabetHeaderSliverViewState<T>
       },
 
       ///provide group height
-      providerHeightGroupFunc: (group) {
+      provideHeightGroupFunc: (group) {
         GroupPosition? groupPosition = _groupPositionList[group];
         if (groupPosition != null) {
           return groupPosition.endPosition - groupPosition.startPosition;
@@ -269,7 +269,7 @@ class _AlphabetHeaderSliverViewState<T>
       },
 
       ///provide total list height
-      providerHeightTotalListFunc: () {
+      provideHeightTotalListFunc: () {
         return _scrollKey.currentContext?.size?.height ?? 0;
       },
 

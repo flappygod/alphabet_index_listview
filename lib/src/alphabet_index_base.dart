@@ -66,8 +66,8 @@ class AlphabetHeaderProvider implements AlphabetHeaderProviderInterface {
   final int Function(int group, {int? child}) provideIndexFunc;
   final int Function() provideIndexTotalGroupFunc;
   final int Function() provideIndexTotalChildFunc;
-  final double Function(int group) providerHeightGroupFunc;
-  final double Function() providerHeightTotalListFunc;
+  final double Function(int group) provideHeightGroupFunc;
+  final double Function() provideHeightTotalListFunc;
   final double Function() provideHeightHeaderViewFunc;
   final double Function() provideHeightTopPaddingFunc;
   final double Function() provideHeightBottomPaddingFunc;
@@ -76,8 +76,8 @@ class AlphabetHeaderProvider implements AlphabetHeaderProviderInterface {
     required this.provideIndexFunc,
     required this.provideIndexTotalGroupFunc,
     required this.provideIndexTotalChildFunc,
-    required this.providerHeightGroupFunc,
-    required this.providerHeightTotalListFunc,
+    required this.provideHeightGroupFunc,
+    required this.provideHeightTotalListFunc,
     required this.provideHeightHeaderViewFunc,
     required this.provideHeightTopPaddingFunc,
     required this.provideHeightBottomPaddingFunc,
@@ -100,17 +100,17 @@ class AlphabetHeaderProvider implements AlphabetHeaderProviderInterface {
 
   @override
   double provideHeightGroup(int group) {
-    return providerHeightGroupFunc(group);
+    return provideHeightGroupFunc(group);
   }
 
   @override
   double provideHeightTotalList() {
-    return providerHeightTotalListFunc();
+    return provideHeightTotalListFunc();
   }
 
   @override
   double provideHeightHeaderView() {
-    throw provideHeightHeaderViewFunc();
+    return provideHeightHeaderViewFunc();
   }
 
   @override
