@@ -63,7 +63,7 @@ class AlphabetHeaderSliverViewController<T> {
               _headerProvider!.provideHeightTopPadding() +
               _headerProvider!.provideHeightBottomPadding();
       double height = groupIndex * _preferGroupHeight! +
-          (index - groupIndex - 1) * _preferChildHeight! +
+          (index - groupIndex) * _preferChildHeight! +
           _headerProvider!.provideHeightHeaderView() +
           _headerProvider!.provideHeightTopPadding();
       _scrollController.jumpTo(min(height, max(maxHeight, 0)));
@@ -109,7 +109,7 @@ class AlphabetHeaderSliverViewController<T> {
               _headerProvider!.provideHeightTopPadding() +
               _headerProvider!.provideHeightBottomPadding();
       double height = groupIndex * _preferGroupHeight! +
-          (index - groupIndex - 1) * _preferChildHeight! +
+          (index - groupIndex) * _preferChildHeight! +
           _headerProvider!.provideHeightHeaderView() +
           _headerProvider!.provideHeightTopPadding();
       _scrollController.jumpTo(min(height, max(maxHeight, 0)));
