@@ -31,7 +31,6 @@ class AlphabetHeaderSliverViewController<T> {
     AnchorScrollController? anchorController,
     double? preferGroupHeight,
     double? preferChildHeight,
-    double preferHeaderHeight = 0,
   })  : _preferGroupHeight = preferGroupHeight,
         _preferChildHeight = preferChildHeight,
         _scrollController = anchorController ?? AnchorScrollController();

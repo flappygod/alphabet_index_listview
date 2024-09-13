@@ -30,7 +30,6 @@ class AlphabetHeaderListViewController<T> {
     AnchorScrollController? scrollController,
     double? preferGroupHeight,
     double? preferChildHeight,
-    double preferHeaderHeight = 0,
   })  : _preferGroupHeight = preferGroupHeight,
         _preferChildHeight = preferChildHeight,
         _scrollController = scrollController ?? AnchorScrollController();
