@@ -59,7 +59,8 @@ class AlphabetHeaderListViewController<T> {
               _headerProvider!.provideIndexTotalChild() * _preferChildHeight! -
               _headerProvider!.provideHeightTotalList() +
               _headerProvider!.provideHeightHeaderView() +
-              _headerProvider!.provideHeightTopPadding();
+              _headerProvider!.provideHeightTopPadding() +
+              _headerProvider!.provideHeightBottomPadding();
       double height = groupIndex * _preferGroupHeight! +
           (index - groupIndex - 1) * _preferChildHeight! +
           _headerProvider!.provideHeightHeaderView() +
@@ -107,7 +108,8 @@ class AlphabetHeaderListViewController<T> {
               _headerProvider!.provideIndexTotalChild() * _preferChildHeight! -
               _headerProvider!.provideHeightTotalList() +
               _headerProvider!.provideHeightHeaderView() +
-              _headerProvider!.provideHeightTopPadding();
+              _headerProvider!.provideHeightTopPadding() +
+              _headerProvider!.provideHeightBottomPadding();
       double height = groupIndex * _preferGroupHeight! +
           (index - groupIndex - 1) * _preferChildHeight! +
           _headerProvider!.provideHeightHeaderView() +
@@ -266,9 +268,12 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
         return 0;
       },
 
-      ///provide refresh func
+      ///provide padding
       provideHeightTopPaddingFunc: () {
         return widget.padding?.top ?? 0;
+      },
+      provideHeightBottomPaddingFunc: () {
+        return widget.padding?.bottom ?? 0;
       },
     );
     widget.controller._headerProvider = _headerProvider;
