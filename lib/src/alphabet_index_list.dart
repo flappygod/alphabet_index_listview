@@ -174,6 +174,7 @@ class _AlphabetIndexListViewState<T> extends State<AlphabetIndexListView<T>> {
     return AlphabetIndexSideBar(
       sideBarTags: sideBarTags,
       sideBarAlign: widget.sideBarAlign,
+      sideBarBuilder: widget.sideBarBuilder,
       onChange: (String tag) {},
       onGestureStart: () {
         _indexTipBarController.isGesture = true;

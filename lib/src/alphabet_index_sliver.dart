@@ -185,6 +185,7 @@ class _AlphabetIndexSliverViewState<T>
     return AlphabetIndexSideBar(
       sideBarTags: sideBarTags,
       sideBarAlign: widget.sideBarAlign,
+      sideBarBuilder: widget.sideBarBuilder,
       onChange: (String tag) {},
       onGestureStart: () {
         _indexTipBarController.isGesture = true;

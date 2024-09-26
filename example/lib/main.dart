@@ -130,7 +130,38 @@ class _MyHomePageState extends State<MyHomePage> {
           },
           tipsBarAlign: AlphabetIndexTipsAlign.center,
           sideBarAlign: AlphabetIndexSideAlign.right,
-          //sideBarAlphabet: kDefaultAlphabets,
+          sideBarBuilder: (tag, flag) {
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(15, 2, 15, 2),
+              child: Text(
+                tag,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black87,
+                ),
+              ),
+            );
+          },
+          tipsBuilder: (int index, String tag) {
+            return Container(
+              decoration: BoxDecoration(
+                color: Colors.yellow.withAlpha(50),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              width: 65,
+              height: 65,
+              alignment: Alignment.center,
+              child: Text(
+                tag,
+                style: const TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black54,
+                ),
+              ),
+            );
+          },
           groupBuilder: (int groupIndex, String tag) {
             return Container(
               color: Colors.grey,
@@ -143,9 +174,11 @@ class _MyHomePageState extends State<MyHomePage> {
           childBuilder: (int groupIndex, int childIndex, String data) {
             return Container(
               decoration: const BoxDecoration(
-                  color: Colors.white70,
-                  border: Border(
-                      bottom: BorderSide(color: Colors.black54, width: 0.5))),
+                color: Colors.white70,
+                border: Border(
+                  bottom: BorderSide(color: Colors.black54, width: 0.5),
+                ),
+              ),
               height: 80,
               alignment: Alignment.centerLeft,
               padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),

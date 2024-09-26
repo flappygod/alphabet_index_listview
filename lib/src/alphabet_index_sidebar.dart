@@ -54,7 +54,7 @@ class AlphabetIndexSideBar extends StatefulWidget {
 
 class _AlphabetIndexSideBarState extends State<AlphabetIndexSideBar> {
   //tags key
-  GlobalKey _tagsKey = GlobalKey();
+  final GlobalKey _tagsKey = GlobalKey();
 
   //current selected tag
   String? _selectedTag;

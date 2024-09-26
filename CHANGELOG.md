@@ -1,3 +1,5 @@
-## 1.0.20
+## 1.0.21
 
-1. Fix a bug ,add header prefer height and adapt list view top padding.
+1. Fixed an issue where the sideBarBuilder was not functioning properly.
+2. Resolved a problem where the sticky header might not update as expected.
+3. Corrected a bug where the listener was not operating correctly.
