@@ -298,8 +298,9 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
       oldWidget.controller._headerProvider = null;
       widget.controller._headerProvider = _headerProvider;
     }
-    _groupPositionList.clear();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _groupPositionList.clear();
+      _refreshGroupPositions();
       _refreshGroupAndOffset();
     });
     super.didUpdateWidget(oldWidget);
