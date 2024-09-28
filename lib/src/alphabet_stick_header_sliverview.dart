@@ -313,6 +313,9 @@ class _AlphabetHeaderSliverViewState<T>
       widget.controller._headerProvider = _headerProvider;
     }
     _groupPositionList.clear();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _refreshGroupAndOffset();
+    });
     super.didUpdateWidget(oldWidget);
   }
 
