@@ -12,7 +12,7 @@ import 'dart:math';
 ///group list view controller
 class AlphabetHeaderSliverViewController<T> {
   ///scroll controller
-  final AnchorScrollController _scrollController;
+  AnchorScrollController _scrollController;
 
   ///get scroll controller
   AnchorScrollController get scrollController => _scrollController;
@@ -28,12 +28,11 @@ class AlphabetHeaderSliverViewController<T> {
 
   ///create list view controller
   AlphabetHeaderSliverViewController({
-    AnchorScrollController? anchorController,
     double? preferGroupHeight,
     double? preferChildHeight,
   })  : _preferGroupHeight = preferGroupHeight,
         _preferChildHeight = preferChildHeight,
-        _scrollController = anchorController ?? AnchorScrollController();
+        _scrollController = AnchorScrollController();
 
   ///scroll to group
   Future scrollToGroup(
@@ -315,6 +314,7 @@ class _AlphabetHeaderSliverViewState<T>
     if (widget.stickHeader) {
       _scrollKey = GlobalKey();
       _groupKey = GlobalKey();
+      widget.controller._scrollController = AnchorScrollController();
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _groupPositionList.clear();
