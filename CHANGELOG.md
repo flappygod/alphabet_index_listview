@@ -1,3 +1,3 @@
-## 1.0.22
+## 1.0.23
 
-1. Fix bugs when changed datasource and setState.
+1. Fixed the issue of unstable header position caused by changes in the outer data.
