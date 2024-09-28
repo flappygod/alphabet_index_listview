@@ -469,7 +469,9 @@ class _AlphabetHeaderSliverViewState<T>
       if (offset != null && itemBox != null) {
         return Rect.fromLTWH(
           offset.dx,
-          offset.dy - listViewHeight,
+          offset.dy -
+              listViewHeight +
+              widget.controller._scrollController.position.pixels,
           itemBox.size.width,
           itemBox.size.height,
         );
@@ -529,8 +531,7 @@ class _AlphabetHeaderSliverViewState<T>
 
           ///calculate data
           if (itemGroupRect != null) {
-            double scrollOffset = itemGroupRect.top +
-                widget.controller._scrollController.position.pixels;
+            double scrollOffset = itemGroupRect.top;
             _groupPositionList[s] = GroupPosition(
               scrollOffset,
               scrollOffset + itemGroupRect.size.height,
