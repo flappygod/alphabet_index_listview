@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:alphabet_index_listview/alphabet_index_listview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -85,6 +87,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<AlphabetIndexGroup<String>>? generatedList;
 
+  List<String> generateRadonString(){
+    var words = 'abcdefghijklmnopqrstuvwxyz'.split('');
+    var rng =  Random();
+    return List<String>.generate(1000, (index) {
+      int length = rng.nextInt(10) + 1; // 随机生成单词长度
+      return List<String>.generate(length, (index) => words[rng.nextInt(words.length)]).join();
+    });
+  }
+
   @override
   void initState() {
     generatedList = AlphabetIndexTool.analyzeData(dataList, (data) => data);
@@ -113,32 +124,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: GestureDetector(
           behavior: HitTestBehavior.translucent,
           onTap: () {
-            List<String> newDataList = [
-              "Gamma",
-              "GammaRay",
-              "Delta",
-              "White",
-              "Fold",
-              "Claimant",
-              "Hi",
-              "Hullo",
-              "Heroic",
-              "Letters",
-              "Task",
-              "Female",
-              "Feet",
-              "Brain",
-              "Cheek",
-              "Beard",
-              "Ear",
-              "Tongue",
-              "Lips",
-              "Eyes",
-              "Elbow",
-              "Palm",
-              "Thumb",
-              "Knee",
-            ];
+            List<String> newDataList = generateRadonString();
             generatedList =
                 AlphabetIndexTool.analyzeData(newDataList, (data) => data);
             setState(() {});
@@ -155,7 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
           // footerView: Container(height: 120, color: Colors.red),
           stickHeader: true,
           dataList: generatedList!,
-          preferGroupHeight: 60,
+          preferGroupHeight: 30,
           preferChildHeight: 80,
           onGroupSelected: (int index) {
             if (kDebugMode) {
@@ -199,7 +185,7 @@ class _MyHomePageState extends State<MyHomePage> {
           groupBuilder: (int groupIndex, String tag) {
             return Container(
               color: Colors.grey,
-              height: 60,
+              height: 30,
               alignment: Alignment.centerLeft,
               padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
               child: Text(tag),
