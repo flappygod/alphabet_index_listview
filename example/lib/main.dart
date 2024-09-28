@@ -110,7 +110,41 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () {
+            List<String> newDataList = [
+              "Gamma",
+              "GammaRay",
+              "Delta",
+              "White",
+              "Fold",
+              "Claimant",
+              "Hi",
+              "Hullo",
+              "Heroic",
+              "Letters",
+              "Task",
+              "Female",
+              "Feet",
+              "Brain",
+              "Cheek",
+              "Beard",
+              "Ear",
+              "Tongue",
+              "Lips",
+              "Eyes",
+              "Elbow",
+              "Palm",
+              "Thumb",
+              "Knee",
+            ];
+            generatedList =
+                AlphabetIndexTool.analyzeData(newDataList, (data) => data);
+            setState(() {});
+          },
+          child: Text(widget.title),
+        ),
       ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it

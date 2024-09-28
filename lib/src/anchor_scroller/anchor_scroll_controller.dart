@@ -436,7 +436,7 @@ class AnchorScrollController extends ScrollController {
   }) async {
     await _helper.scrollToIndex(
       index: index,
-      scrollSpeed: scrollSpeed,
+      scrollSpeed: max(scrollSpeed, 1),
       curve: curve,
       deltaOffset: deltaOffset,
     );

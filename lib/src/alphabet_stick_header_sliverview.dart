@@ -312,6 +312,7 @@ class _AlphabetHeaderSliverViewState<T>
       oldWidget.controller._headerProvider = null;
       widget.controller._headerProvider = _headerProvider;
     }
+    _groupPositionList.clear();
     super.didUpdateWidget(oldWidget);
   }
 
@@ -495,8 +496,7 @@ class _AlphabetHeaderSliverViewState<T>
 
         ///calculate data
         if (itemGroupRect != null) {
-          double scrollOffset = itemGroupRect.top +
-              widget.controller._scrollController.position.pixels;
+          double scrollOffset = itemGroupRect.top;
           _groupPositionList[s] = GroupPosition(
             scrollOffset,
             scrollOffset + itemGroupRect.size.height,
