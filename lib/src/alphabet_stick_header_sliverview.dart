@@ -207,10 +207,10 @@ class _AlphabetHeaderSliverViewState<T>
       "alphabet_index_list_view_stick_header_index_prefix";
 
   ///scroll key
-  final GlobalKey _scrollKey = GlobalKey();
+  GlobalKey _scrollKey = GlobalKey();
 
   ///group key
-  final GlobalKey _groupKey = GlobalKey();
+  GlobalKey _groupKey = GlobalKey();
 
   ///header key
   final GlobalKey _headerKey = GlobalKey();
@@ -311,6 +311,10 @@ class _AlphabetHeaderSliverViewState<T>
     if (oldWidget.controller != widget.controller) {
       oldWidget.controller._headerProvider = null;
       widget.controller._headerProvider = _headerProvider;
+    }
+    if (widget.stickHeader) {
+      _scrollKey = GlobalKey();
+      _groupKey = GlobalKey();
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _groupPositionList.clear();

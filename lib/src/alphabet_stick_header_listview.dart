@@ -200,10 +200,10 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
       "alphabet_index_list_view_stick_header_index_prefix";
 
   ///scroll key
-  final GlobalKey _scrollKey = GlobalKey();
+  GlobalKey _scrollKey = GlobalKey();
 
   ///header key
-  final GlobalKey _groupKey = GlobalKey();
+  GlobalKey _groupKey = GlobalKey();
 
   ///provider
   late AlphabetHeaderProviderInterface _headerProvider;
@@ -297,6 +297,10 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
     if (oldWidget.controller != widget.controller) {
       oldWidget.controller._headerProvider = null;
       widget.controller._headerProvider = _headerProvider;
+    }
+    if (widget.stickHeader) {
+      _scrollKey = GlobalKey();
+      _groupKey = GlobalKey();
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _groupPositionList.clear();
