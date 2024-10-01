@@ -56,11 +56,11 @@ class AlphabetHeaderSliverViewController<T> {
       ///get group index
       double maxHeight =
           _headerProvider!.provideIndexTotalGroup() * _preferGroupHeight! +
-              _headerProvider!.provideIndexTotalChild() * _preferChildHeight! -
-              _headerProvider!.provideHeightTotalList() +
+              _headerProvider!.provideIndexTotalChild() * _preferChildHeight! +
               _headerProvider!.provideHeightHeaderView() +
               _headerProvider!.provideHeightTopPadding() +
-              _headerProvider!.provideHeightBottomPadding();
+              _headerProvider!.provideHeightBottomPadding() -
+              _headerProvider!.provideHeightTotalList();
       double height = groupIndex * _preferGroupHeight! +
           (index - groupIndex) * _preferChildHeight! +
           _headerProvider!.provideHeightHeaderView() +
