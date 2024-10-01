@@ -164,9 +164,6 @@ class AlphabetHeaderSliverView<T> extends StatefulWidget {
   final ChildIndexGetter? findChildIndexCallback;
   final EdgeInsets? padding;
 
-  ///the group height is instability
-  final bool instabilityHeaderHeight;
-
   const AlphabetHeaderSliverView({
     super.key,
     required this.dataList,
@@ -187,7 +184,6 @@ class AlphabetHeaderSliverView<T> extends StatefulWidget {
     this.restorationId,
     this.findChildIndexCallback,
     this.padding,
-    this.instabilityHeaderHeight = false,
     this.headerView,
     this.footerView,
   });
@@ -225,7 +221,7 @@ class _AlphabetHeaderSliverViewState<T>
       AlphabetHeaderListViewGroupController();
 
   ///calculated group position list
-  final Map<int, GroupPosition> _groupPositionList = {};
+  Map<int, GroupPosition> _groupPositionList = {};
 
   ///init controllers
   void _initControllers() {
@@ -342,10 +338,8 @@ class _AlphabetHeaderSliverViewState<T>
           AlphabetHeaderListViewStickView(
             key: _groupKey,
             stickOffsetController: _headerController,
-            scrollCurrentOffset: widget.padding?.top ?? 0,
             groupBuilder: widget.groupBuilder,
             dataList: widget.dataList,
-            indexPrefix: _uniqueStr,
           ),
         ],
       );
@@ -363,7 +357,7 @@ class _AlphabetHeaderSliverViewState<T>
       },
       child: CustomScrollView(
         key: _scrollKey,
-        controller: widget.controller.scrollController,
+        controller: widget.controller._scrollController,
         physics: widget.physics,
         cacheExtent: widget.cacheExtent,
         dragStartBehavior: widget.dragStartBehavior,
@@ -450,6 +444,29 @@ class _AlphabetHeaderSliverViewState<T>
 
   ///get the group item offset
   Rect? _getGroupItemRect(int index, double listViewHeight) {
+    ///get item data
+    int groupIndex =
+        AlphabetIndexTool.getItemIndexFromGroupPos(widget.dataList, index);
+    AnchorItemWrapperState? data =
+        widget.controller._scrollController.itemMap[groupIndex];
+    RenderBox? itemBox = data?.context.findRenderObject() as RenderBox?;
+    Offset? offset = itemBox?.localToGlobal(Offset(0.0, 0.0));
+    if (offset != null && itemBox != null) {
+      return Rect.fromLTWH(
+        offset.dx,
+        offset.dy -
+            listViewHeight +
+            widget.controller._scrollController.position.pixels,
+        itemBox.size.width,
+        itemBox.size.height,
+      );
+    } else {
+      return null;
+    }
+  }
+
+  ///get the group item prefer offset
+  Rect? _getGroupItemPreferRect(int index) {
     if (widget.controller._preferGroupHeight != null &&
         widget.controller._preferChildHeight != null) {
       ///calculate prefer height offset
@@ -459,99 +476,83 @@ class _AlphabetHeaderSliverViewState<T>
               widget.controller._preferChildHeight!;
 
       ///offset
-      double offset = _getHeaderHeight() + (widget.padding?.top ?? 0);
+      double offset = (widget.padding?.top ?? 0);
+
       return Rect.fromLTWH(
         0,
         top + offset,
         MediaQuery.of(context).size.width,
         widget.controller._preferGroupHeight!,
       );
-    } else {
-      ///get item data
-      int groupIndex =
-          AlphabetIndexTool.getItemIndexFromGroupPos(widget.dataList, index);
-      AnchorItemWrapperState? data =
-          widget.controller._scrollController.itemMap[groupIndex];
-      RenderBox? itemBox = data?.context.findRenderObject() as RenderBox?;
-      Offset? offset = itemBox?.localToGlobal(Offset(0.0, 0.0));
-      if (offset != null && itemBox != null) {
-        return Rect.fromLTWH(
-          offset.dx,
-          offset.dy -
-              listViewHeight +
-              widget.controller._scrollController.position.pixels,
-          itemBox.size.width,
-          itemBox.size.height,
-        );
-      } else {
-        return null;
-      }
     }
+    return null;
   }
 
   ///refresh top stick
   void _refreshGroupPositions() {
-    ///get list render box
+    //get list render box
     Offset? listOffset = _getListViewOffset();
     if (listOffset == null) {
       return;
     }
 
-    ///always calculate the header height
-    if (widget.instabilityHeaderHeight) {
-      ///calculate group positions
-      for (int s = 0; s < widget.dataList.length; s++) {
-        ///get item data
-        Rect? itemGroupRect = _getGroupItemRect(s, listOffset.dy);
+    //get the actual rect on screen
+    Map<int, GroupPosition> actualMap = {};
+    for (int s = 0; s < widget.dataList.length; s++) {
+      Rect? itemGroupRect = _getGroupItemRect(s, listOffset.dy);
+      if (itemGroupRect != null) {
+        double scrollOffset = itemGroupRect.top;
+        actualMap[s] = GroupPosition(
+          scrollOffset,
+          scrollOffset + itemGroupRect.size.height,
+        );
+      }
+    }
 
-        ///calculate data
+    //if we set the prefer child height and prefer group height, just calculate all offsets
+    if (widget.controller._preferChildHeight != null &&
+        widget.controller._preferGroupHeight != null) {
+      Map<int, GroupPosition> preferMap = {};
+      for (int s = 0; s < widget.dataList.length; s++) {
+        Rect? itemGroupRect = _getGroupItemPreferRect(s);
         if (itemGroupRect != null) {
           double scrollOffset = itemGroupRect.top;
-          _groupPositionList[s] = GroupPosition(
+          preferMap[s] = GroupPosition(
             scrollOffset,
             scrollOffset + itemGroupRect.size.height,
           );
         }
       }
-    } else {
-      ///calculate group positions
-      bool allCalculated = true;
-      for (int s = 0; s < widget.dataList.length; s++) {
-        if (_groupPositionList[s] == null) {
-          allCalculated = false;
+      //calculate the offset actual and prefer
+      if (actualMap.isNotEmpty) {
+        int key = actualMap.keys.first;
+        double offset = (preferMap[key]?.startPosition ?? 0) -
+            (actualMap[key]?.startPosition ?? 0);
+        //if they are the same
+        if (offset == 0) {
+          _groupPositionList = preferMap;
         }
-      }
-      if (allCalculated) {
-        return;
-      }
-
-      ///calculate group positions
-      for (int s = 0; s < widget.dataList.length; s++) {
-        ///has calculated ,continue
-        if (_groupPositionList[s] != null) {
-          continue;
-        }
-
-        ///calculate group positions
-        for (int s = 0; s < widget.dataList.length; s++) {
-          ///get item data
-          Rect? itemGroupRect = _getGroupItemRect(s, listOffset.dy);
-
-          ///calculate data
-          if (itemGroupRect != null) {
-            double scrollOffset = itemGroupRect.top;
-            _groupPositionList[s] = GroupPosition(
-              scrollOffset,
-              scrollOffset + itemGroupRect.size.height,
-            );
+        //correct to the actual display offset
+        else {
+          for (int key in preferMap.keys) {
+            preferMap[key] = GroupPosition(
+                preferMap[key]!.startPosition - offset,
+                preferMap[key]!.endPosition - offset);
           }
+          _groupPositionList = preferMap;
         }
       }
+    } else {
+      _groupPositionList.addAll(actualMap);
     }
   }
 
   ///refresh
   void _refreshGroupAndOffset() {
+    if (!widget.controller.scrollController.hasClients) {
+      return;
+    }
+
     ///get pixels
     double scrollOffset = widget.controller.scrollController.position.pixels;
 
@@ -593,16 +594,9 @@ class _AlphabetHeaderSliverViewState<T>
     }
 
     ///current offset
-    if (currentOffset == 0) {
-      _headerController.setCurrentGroup(
-        currentIndex,
-        currentOffset,
-      );
-    } else {
-      _headerController.setCurrentGroup(
-        currentIndex,
-        currentOffset,
-      );
-    }
+    _headerController.setCurrentGroup(
+      currentIndex,
+      currentOffset,
+    );
   }
 }

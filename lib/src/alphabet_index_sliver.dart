@@ -62,9 +62,6 @@ class AlphabetIndexSliverView<T> extends StatefulWidget {
   final double? preferGroupHeight;
   final double? preferChildHeight;
 
-  ///the group height is instability
-  final bool instabilityHeaderHeight;
-
   //index bar list view
   const AlphabetIndexSliverView({
     super.key,
@@ -93,11 +90,13 @@ class AlphabetIndexSliverView<T> extends StatefulWidget {
     this.findChildIndexCallback,
     this.padding,
     this.onGroupSelected,
-    this.indexedScrollSpeed = -1,
-    this.preferGroupHeight,
-    this.preferChildHeight,
-    this.instabilityHeaderHeight = false,
-  });
+    double? preferGroupHeight,
+    double? preferChildHeight,
+    double? indexedScrollSpeed,
+  })  : this.preferGroupHeight = preferGroupHeight,
+        this.preferChildHeight = preferChildHeight,
+        this.indexedScrollSpeed =
+            (preferGroupHeight != null && preferChildHeight != null) ? -1 : 10;
 
   @override
   State<StatefulWidget> createState() {
@@ -176,7 +175,6 @@ class _AlphabetIndexSliverViewState<T>
       clipBehavior: widget.clipBehavior,
       restorationId: widget.restorationId,
       padding: widget.padding,
-      instabilityHeaderHeight: widget.instabilityHeaderHeight,
     );
   }
 

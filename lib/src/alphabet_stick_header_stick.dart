@@ -117,19 +117,11 @@ class AlphabetHeaderListViewStickView<T> extends StatefulWidget {
   ///tags list
   final List<AlphabetIndexGroup<T>> dataList;
 
-  ///prefix index
-  final String? indexPrefix;
-
-  ///current offset
-  final double scrollCurrentOffset;
-
   const AlphabetHeaderListViewStickView({
     super.key,
     required this.stickOffsetController,
     required this.groupBuilder,
     required this.dataList,
-    this.scrollCurrentOffset = 0,
-    this.indexPrefix,
   });
 
   @override

@@ -56,9 +56,6 @@ class AlphabetIndexListView<T> extends StatefulWidget {
   final double? preferGroupHeight;
   final double? preferChildHeight;
 
-  ///the group height is instability
-  final bool instabilityHeaderHeight;
-
   //index bar list view
   const AlphabetIndexListView({
     super.key,
@@ -85,11 +82,13 @@ class AlphabetIndexListView<T> extends StatefulWidget {
     this.findChildIndexCallback,
     this.padding,
     this.onGroupSelected,
-    this.indexedScrollSpeed = -1,
-    this.preferGroupHeight,
-    this.preferChildHeight,
-    this.instabilityHeaderHeight = false,
-  });
+    double? preferGroupHeight,
+    double? preferChildHeight,
+    double? indexedScrollSpeed,
+  })  : this.preferGroupHeight = preferGroupHeight,
+        this.preferChildHeight = preferChildHeight,
+        this.indexedScrollSpeed =
+            (preferGroupHeight != null && preferChildHeight != null) ? -1 : 10;
 
   @override
   State<StatefulWidget> createState() {
@@ -165,7 +164,6 @@ class _AlphabetIndexListViewState<T> extends State<AlphabetIndexListView<T>> {
       clipBehavior: widget.clipBehavior,
       restorationId: widget.restorationId,
       padding: widget.padding,
-      instabilityHeaderHeight: widget.instabilityHeaderHeight,
     );
   }
 

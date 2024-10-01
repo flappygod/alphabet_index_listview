@@ -1,8 +1,7 @@
-import 'dart:math';
-
 import 'package:alphabet_index_listview/alphabet_index_listview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'dart:math';
 
 void main() {
   runApp(const MyApp());
@@ -87,12 +86,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<AlphabetIndexGroup<String>>? generatedList;
 
-  List<String> generateRadonString(){
+  List<String> generateRadonString() {
     var words = 'abcdefghijklmnopqrstuvwxyz'.split('');
-    var rng =  Random();
+    var rng = Random();
     return List<String>.generate(1000, (index) {
       int length = rng.nextInt(10) + 1; // 随机生成单词长度
-      return List<String>.generate(length, (index) => words[rng.nextInt(words.length)]).join();
+      return List<String>.generate(
+          length, (index) => words[rng.nextInt(words.length)]).join();
     });
   }
 
@@ -135,10 +135,10 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        child: AlphabetIndexListView(
+        child: AlphabetIndexSliverView(
           //child: AlphabetIndexSliverView(
-          // headerView: Container(height: 120, color: Colors.red),
-          // footerView: Container(height: 120, color: Colors.red),
+          headerView: Container(height: 120, color: Colors.red),
+          footerView: Container(height: 120, color: Colors.red),
           stickHeader: true,
           dataList: generatedList!,
           preferGroupHeight: 30,
@@ -205,7 +205,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Text(data),
             );
           },
-          padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+          padding: const EdgeInsets.fromLTRB(0, 100, 0, 100),
         ),
       ),
     );
