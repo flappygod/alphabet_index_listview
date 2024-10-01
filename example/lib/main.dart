@@ -137,8 +137,8 @@ class _MyHomePageState extends State<MyHomePage> {
         // in the middle of the parent.
         child: AlphabetIndexSliverView(
           //child: AlphabetIndexSliverView(
-          headerView: Container(height: 120, color: Colors.red),
-          footerView: Container(height: 120, color: Colors.red),
+          headerView: Container(height: 50, color: Colors.red),
+          footerView: Container(height: 50, color: Colors.red),
           stickHeader: true,
           dataList: generatedList!,
           preferGroupHeight: 30,
