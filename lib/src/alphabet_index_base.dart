@@ -54,6 +54,9 @@ abstract class AlphabetHeaderProviderInterface {
   ///total height header view
   double provideHeightHeaderView();
 
+  ///total height header view
+  double provideHeightFooterView();
+
   ///provider top padding
   double provideHeightTopPadding();
 
@@ -69,6 +72,7 @@ class AlphabetHeaderProvider implements AlphabetHeaderProviderInterface {
   final double Function(int group) provideHeightGroupFunc;
   final double Function() provideHeightTotalListFunc;
   final double Function() provideHeightHeaderViewFunc;
+  final double Function() provideHeightFooterViewFunc;
   final double Function() provideHeightTopPaddingFunc;
   final double Function() provideHeightBottomPaddingFunc;
 
@@ -79,6 +83,7 @@ class AlphabetHeaderProvider implements AlphabetHeaderProviderInterface {
     required this.provideHeightGroupFunc,
     required this.provideHeightTotalListFunc,
     required this.provideHeightHeaderViewFunc,
+    required this.provideHeightFooterViewFunc,
     required this.provideHeightTopPaddingFunc,
     required this.provideHeightBottomPaddingFunc,
   });
@@ -111,6 +116,11 @@ class AlphabetHeaderProvider implements AlphabetHeaderProviderInterface {
   @override
   double provideHeightHeaderView() {
     return provideHeightHeaderViewFunc();
+  }
+
+  @override
+  double provideHeightFooterView() {
+    return provideHeightFooterViewFunc();
   }
 
   @override

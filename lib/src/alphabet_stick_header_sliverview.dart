@@ -58,6 +58,7 @@ class AlphabetHeaderSliverViewController<T> {
           _headerProvider!.provideIndexTotalGroup() * _preferGroupHeight! +
               _headerProvider!.provideIndexTotalChild() * _preferChildHeight! +
               _headerProvider!.provideHeightHeaderView() +
+              _headerProvider!.provideHeightFooterView() +
               _headerProvider!.provideHeightTopPadding() +
               _headerProvider!.provideHeightBottomPadding() -
               _headerProvider!.provideHeightTotalList();
@@ -105,6 +106,7 @@ class AlphabetHeaderSliverViewController<T> {
               _headerProvider!.provideIndexTotalChild() * _preferChildHeight! -
               _headerProvider!.provideHeightTotalList() +
               _headerProvider!.provideHeightHeaderView() +
+              _headerProvider!.provideHeightFooterView() +
               _headerProvider!.provideHeightTopPadding() +
               _headerProvider!.provideHeightBottomPadding();
       double height = groupIndex * _preferGroupHeight! +
@@ -210,6 +212,9 @@ class _AlphabetHeaderSliverViewState<T>
   ///header key
   final GlobalKey _headerKey = GlobalKey();
 
+  ///footer key
+  final GlobalKey _footerKey = GlobalKey();
+
   ///provider
   late AlphabetHeaderProviderInterface _headerProvider;
 
@@ -273,6 +278,11 @@ class _AlphabetHeaderSliverViewState<T>
         return _getHeaderHeight();
       },
 
+      ///provide footer height
+      provideHeightFooterViewFunc: () {
+        return _getFooterHeight();
+      },
+
       ///provide padding
       provideHeightTopPaddingFunc: () {
         return widget.padding?.top ?? 0;
@@ -292,6 +302,10 @@ class _AlphabetHeaderSliverViewState<T>
 
   double _getHeaderHeight() {
     return _headerKey.currentContext?.size?.height ?? 0;
+  }
+
+  double _getFooterHeight() {
+    return _footerKey.currentContext?.size?.height ?? 0;
   }
 
   ///init state
@@ -426,7 +440,10 @@ class _AlphabetHeaderSliverViewState<T>
                     widget.padding!.right, widget.padding!.bottom)
                 : EdgeInsets.zero,
             sliver: SliverToBoxAdapter(
-              child: widget.footerView,
+              child: SizedBox(
+                key: _footerKey,
+                child: widget.footerView,
+              ),
             ),
           ),
         ],
