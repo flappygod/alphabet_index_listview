@@ -8,6 +8,7 @@
 
 <p>///build your list view.</p>
 
+
 <p>return AlphabetIndexListView(<br />
  stickHeader: true,<br />
  dataList: _groupContactList,<br />
@@ -20,6 +21,10 @@
  },<br />
  padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),<br />
 );</p>
+
+
+![GIF](https://github.com/flappygod/alphabet_index_listview/blob/main/about_this.gif)
+
 
 <p>
 </p>
