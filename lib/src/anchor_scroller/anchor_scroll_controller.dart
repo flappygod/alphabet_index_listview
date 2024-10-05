@@ -13,20 +13,20 @@ class AnchorScrollControllerHelper {
     required this.scrollController,
     this.fixedItemSize,
     this.onIndexChanged,
-    this.anchorOffsetAll,
+    this.anchorOffsetAll = 0,
     this.pinGroupTitleOffset,
   });
 
   /// [ScrollView] 的 [ScrollController]
   final ScrollController scrollController;
 
+  /// 应用于每个项目顶部的偏移量
+  final double anchorOffsetAll;
+
   /// 固定的项目大小
   /// 如果 [ScrollView] 垂直滚动，它应该是项目的固定高度
   /// 如果 [ScrollView] 水平滚动，它应该是项目的固定宽度
   final double? fixedItemSize;
-
-  /// 应用于每个项目顶部的偏移量
-  final double? anchorOffsetAll;
 
   /// 用于计算当前索引的偏移量
   final double? pinGroupTitleOffset;
@@ -70,21 +70,25 @@ class AnchorScrollControllerHelper {
 
   void notifyIndexChanged() {
     // 如果滚动行为是由用户触发的，通知索引更改
-    if (scrollController.hasClients && scrollController.offset >= scrollController.position.minScrollExtent) {
+    if (scrollController.hasClients &&
+        scrollController.offset >= scrollController.position.minScrollExtent) {
       if (scrollController.offset < scrollController.position.maxScrollExtent ||
-          (scrollController.offset == scrollController.position.maxScrollExtent &&
+          (scrollController.offset ==
+                  scrollController.position.maxScrollExtent &&
               _lastOffset < scrollController.position.maxScrollExtent)) {
         final index = _getCurrIndex();
         if (index != _currIndex) {
           _currIndex = index;
           onIndexChanged?.call(
             _currIndex,
-            scrollController.position.userScrollDirection != ScrollDirection.idle,
+            scrollController.position.userScrollDirection !=
+                ScrollDirection.idle,
           );
           for (var indexListener in indexListeners) {
             indexListener.call(
               _currIndex,
-              scrollController.position.userScrollDirection != ScrollDirection.idle,
+              scrollController.position.userScrollDirection !=
+                  ScrollDirection.idle,
             );
           }
         }
@@ -105,8 +109,9 @@ class AnchorScrollControllerHelper {
         continue;
       }
 
-      final double totalOffset = _applyAnchorOffset(revealedOffset.offset);
-      if (totalOffset <= scrollController.offset && totalOffset + revealedOffset.rect.height > scrollController.offset) {
+      final double totalOffset = revealedOffset.offset;
+      if (totalOffset <= scrollController.offset &&
+          totalOffset + revealedOffset.rect.height > scrollController.offset) {
         tmpIndex = index;
         break;
       }
@@ -120,7 +125,8 @@ class AnchorScrollControllerHelper {
       int index = _currIndex;
       RevealedOffset? revealedOffset = _getOffsetToReveal(index);
       while (revealedOffset != null) {
-        if (scrollController.offset > revealedOffset.offset + revealedOffset.rect.height) {
+        if (scrollController.offset >
+            revealedOffset.offset + revealedOffset.rect.height) {
           RevealedOffset? nextRevealedOffset = _getOffsetToReveal(index + 1);
           if (nextRevealedOffset != null) {
             if (scrollController.offset < nextRevealedOffset.offset) {
@@ -136,7 +142,8 @@ class AnchorScrollControllerHelper {
           RevealedOffset? preRevealedOffset = _getOffsetToReveal(index - 1);
           if (preRevealedOffset != null) {
             index--;
-            if (scrollController.offset > preRevealedOffset.offset + preRevealedOffset.rect.height) {
+            if (scrollController.offset >
+                preRevealedOffset.offset + preRevealedOffset.rect.height) {
               break;
             } else {
               revealedOffset = _getOffsetToReveal(index);
@@ -154,7 +161,9 @@ class AnchorScrollControllerHelper {
       final nextIndex = tmpIndex + 1;
       if (_itemMap.containsKey(nextIndex)) {
         final RevealedOffset? revealedOffset = _getOffsetToReveal(nextIndex);
-        if (revealedOffset != null && (revealedOffset.offset - pinGroupTitleOffset!) < scrollController.offset) {
+        if (revealedOffset != null &&
+            (revealedOffset.offset - pinGroupTitleOffset!) <
+                scrollController.offset) {
           tmpIndex = nextIndex;
         }
       }
@@ -164,6 +173,11 @@ class AnchorScrollControllerHelper {
 
   /// 当前是否正在滚动到某个索引
   bool _isScrollingToIndex = false;
+
+  ///获取总的偏移量
+  double _getTotalAnchorOffset({double anchorOffset = 0}) {
+    return anchorOffsetAll + anchorOffset;
+  }
 
   /// 滚动到指定索引
   ///
@@ -194,8 +208,8 @@ class AnchorScrollControllerHelper {
       // 或者在动画到达视口边缘并尝试过度滚动时中断。
       // 因此，创建一个新的滚动行为以停止上一个。
       // 也许有更好的方法来做到这一点。
-       await scrollController.animateTo(
-        _applyAnchorOffset(scrollController.offset),
+      await scrollController.animateTo(
+        scrollController.offset,
         duration: const Duration(milliseconds: 1),
         curve: curve,
       );
@@ -206,10 +220,14 @@ class AnchorScrollControllerHelper {
 
     if (fixedItemSize != null) {
       // 如果项目大小是固定的，目标偏移量是 index * fixedItemSize
-      final targetOffset = _applyAnchorOffset(index * fixedItemSize!) - anchorOffset;
-      final int scrollTime = ((scrollController.offset - targetOffset).abs() / scrollSpeed).round();
+      final targetOffset = index * fixedItemSize! -
+          _getTotalAnchorOffset(anchorOffset: anchorOffset);
+      final int scrollTime =
+          ((scrollController.offset - targetOffset).abs() / scrollSpeed)
+              .round();
       final Duration duration = Duration(milliseconds: scrollTime);
-      await scrollController.animateTo(targetOffset, duration: duration, curve: curve);
+      await scrollController.animateTo(targetOffset,
+          duration: duration, curve: curve);
     } else {
       // 如果项目大小不是固定的，需要考虑两种情况。
       // 1. 如果目标索引项目已经在视口中，我们可以直接获取目标偏移量
@@ -217,36 +235,39 @@ class AnchorScrollControllerHelper {
       //    然后我们将在视口中获得一些更接近目标项目的项目。
       //    重复上述步骤，直到目标项目在视口中，然后我们可以获取其偏移量并滚动到它。
       if (_itemMap.containsKey(index)) {
+        ///直接尝试滚动到指定位置
         await _animateToIndexInViewport(
           index,
           scrollSpeed,
           curve,
-          anchorOffset: anchorOffset,
+          anchorOffset: _getTotalAnchorOffset(anchorOffset: anchorOffset),
         );
+
+        ///增加判断
         int lastIndex = _currIndex;
         while (_currIndex != index) {
           await _animateToIndexInViewport(
             index,
             scrollSpeed,
             curve,
-            anchorOffset: anchorOffset,
+            anchorOffset: _getTotalAnchorOffset(anchorOffset: anchorOffset),
           );
-
           if (_currIndex == lastIndex) {
             break;
           }
           lastIndex = _currIndex;
-
           if (!_isScrollingToIndex) {
-            // 此滚动被中断
             return;
           }
         }
       } else {
+        ///逐步逼近目标index
         int tmpIndex = _currIndex;
         while (!_itemMap.containsKey(index)) {
-          final sortedKeys = _itemMap.keys.toList()..sort((first, second) => first.compareTo(second));
-          final targetIndex = (tmpIndex < index) ? sortedKeys.last : sortedKeys.first;
+          final sortedKeys = _itemMap.keys.toList()
+            ..sort((first, second) => first.compareTo(second));
+          final targetIndex =
+              (tmpIndex < index) ? sortedKeys.last : sortedKeys.first;
           if (targetIndex == tmpIndex) {
             break;
           }
@@ -259,24 +280,28 @@ class AnchorScrollControllerHelper {
             alignment: alignment,
           );
           if (!_isScrollingToIndex) {
-            // 此滚动被中断
             return;
           }
         }
 
+        ///最后滚动到指定位置
         await _animateToIndexInViewport(
           index,
           scrollSpeed,
           curve,
-          anchorOffset: anchorOffset,
+          anchorOffset: _getTotalAnchorOffset(anchorOffset: anchorOffset),
         );
       }
 
-      // 有时项目的偏移量可能会改变，例如，项目的高度在重建后改变，
-      // 这使得它无法精确滚动到索引。因此，最后跳转到精确的偏移量。
-      final targetScrollOffset = _getScrollOffset(index, anchorOffset: anchorOffset);
-      if (targetScrollOffset != null && scrollController.offset != targetScrollOffset) {
-        scrollController.jumpTo(_applyAnchorOffset(targetScrollOffset));
+      //有时项目的偏移量可能会改变，例如，项目的高度在重建后改变，
+      //这使得它无法精确滚动到索引。因此，最后跳转到精确的偏移量。
+      final targetScrollOffset = _getScrollOffset(
+        index,
+        anchorOffset: _getTotalAnchorOffset(anchorOffset: anchorOffset),
+      );
+      if (targetScrollOffset != null &&
+          scrollController.offset != targetScrollOffset) {
+        scrollController.jumpTo(targetScrollOffset);
       }
 
       _currIndex = index;
@@ -301,8 +326,9 @@ class AnchorScrollControllerHelper {
       return;
     }
 
-    final double totalOffset = _applyAnchorOffset(targetOffset);
-    int scrollTime = ((scrollController.offset - totalOffset).abs() / scrollSpeed).ceil();
+    final double totalOffset = targetOffset;
+    int scrollTime =
+        ((scrollController.offset - totalOffset).abs() / scrollSpeed).ceil();
     scrollTime = max(scrollTime, 35);
     final Duration duration = Duration(milliseconds: scrollTime);
     await scrollController.animateTo(
@@ -324,7 +350,7 @@ class AnchorScrollControllerHelper {
     }
     return (revealOffset.offset - anchorOffset).clamp(
       scrollController.position.minScrollExtent,
-      scrollController.position.maxScrollExtent + (anchorOffsetAll ?? 0),
+      scrollController.position.maxScrollExtent,
     );
   }
 
@@ -334,7 +360,6 @@ class AnchorScrollControllerHelper {
     double alignment = 0,
   }) {
     RevealedOffset? offset;
-
     final context = _itemMap[index]?.context;
     if (context != null) {
       final renderBox = context.findRenderObject();
@@ -343,12 +368,8 @@ class AnchorScrollControllerHelper {
         offset = viewport.getOffsetToReveal(renderBox, alignment);
       }
     }
-
     return offset;
   }
-
-  /// 应用锚点偏移到滚动偏移
-  double _applyAnchorOffset(double currentOffset) => currentOffset - (anchorOffsetAll ?? 0);
 }
 
 ///anchor scroll controller
@@ -359,7 +380,7 @@ class AnchorScrollController extends ScrollController {
     String? debugLabel,
     this.onIndexChanged,
     this.fixedItemSize,
-    this.anchorOffsetAll,
+    this.anchorOffsetAll = 0,
     double? pinOffset,
   }) : super(
           initialScrollOffset: initialScrollOffset,
@@ -368,21 +389,21 @@ class AnchorScrollController extends ScrollController {
         ) {
     _helper = AnchorScrollControllerHelper(
       scrollController: this,
+      anchorOffsetAll: anchorOffsetAll,
       fixedItemSize: fixedItemSize,
       onIndexChanged: onIndexChanged,
-      anchorOffsetAll: anchorOffsetAll,
       pinGroupTitleOffset: pinOffset,
     );
   }
+
+  // 锚点偏移量
+  final double anchorOffsetAll;
 
   // 固定的项目大小
   final double? fixedItemSize;
 
   // 索引更改时的回调
   final IndexChanged? onIndexChanged;
-
-  // 锚点偏移量
-  final double? anchorOffsetAll;
 
   // 帮助类实例
   late final AnchorScrollControllerHelper _helper;
@@ -414,9 +435,8 @@ class AnchorScrollController extends ScrollController {
 
   @override
   void notifyListeners() {
-    // 通知索引更改
+    ///通知索引更改
     _helper.notifyIndexChanged();
-    // 调用父类的通知方法
     super.notifyListeners();
   }
 

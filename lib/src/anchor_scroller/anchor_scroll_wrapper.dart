@@ -11,15 +11,19 @@ class AnchorItemWrapper extends StatefulWidget {
     this.controller,
     this.scrollViewWrapper,
     Key? key,
-  })  : assert(controller != null || scrollViewWrapper != null, "必须有 AnchorScrollController 或 AnchorScrollViewWrapper"),
+  })  : assert(controller != null || scrollViewWrapper != null,
+            "必须有 AnchorScrollController 或 AnchorScrollViewWrapper"),
         super(key: key ?? ValueKey(index));
 
   // 可选的 AnchorScrollController
   final AnchorScrollController? controller;
+
   // 项目的索引
   final int index;
+
   // 子小部件
   final Widget child;
+
   // 可选的 AnchorScrollViewWrapper
   final AnchorScrollViewWrapper? scrollViewWrapper;
 
@@ -81,9 +85,9 @@ class AnchorScrollViewWrapper extends InheritedWidget {
   AnchorScrollViewWrapper({
     required this.controller,
     required Widget child,
+    this.anchorOffset = 0,
     this.fixedItemSize,
     this.onIndexChanged,
-    this.anchorOffset,
     double? pinGroupTitleOffset,
     Key? key,
   }) : super(key: key, child: child) {
@@ -104,14 +108,14 @@ class AnchorScrollViewWrapper extends InheritedWidget {
   // 滚动控制器
   final ScrollController controller;
 
+  // 锚点偏移量
+  final double anchorOffset;
+
   // 固定的项目大小
   final double? fixedItemSize;
 
   // 索引更改时的回调
   final IndexChanged? onIndexChanged;
-
-  // 锚点偏移量
-  final double? anchorOffset;
 
   // 帮助类实例
   late final AnchorScrollControllerHelper _helper;
@@ -141,7 +145,8 @@ class AnchorScrollViewWrapper extends InheritedWidget {
 
   // 获取当前上下文的 AnchorScrollViewWrapper 实例
   static AnchorScrollViewWrapper? of(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<AnchorScrollViewWrapper>();
+    return context
+        .dependOnInheritedWidgetOfExactType<AnchorScrollViewWrapper>();
   }
 
   @override
