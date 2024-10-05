@@ -1,3 +1,3 @@
-## 1.0.24
+## 1.0.25
 
-1. Remove unnecessary and confusing parameters.
+1. Fix bugs in anchor scroll view and remove un need code.

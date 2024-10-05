@@ -101,6 +101,7 @@ class AnchorScrollControllerHelper {
     }
   }
 
+  ///get current index
   int _getCurrIndex() {
     int? tmpIndex;
     for (final index in _itemMap.keys.toList()) {
@@ -171,12 +172,28 @@ class AnchorScrollControllerHelper {
     return tmpIndex;
   }
 
-  /// 当前是否正在滚动到某个索引
-  bool _isScrollingToIndex = false;
-
   ///获取总的偏移量
   double _getTotalAnchorOffset({double anchorOffset = 0}) {
     return anchorOffsetAll + anchorOffset;
+  }
+
+  ///当前是否正在滚动到某个索引
+  bool _isScrollingToIndex = false;
+
+  ///当前是否正在执行逼近操作
+  bool _isScrollingApproximate = false;
+
+  /// 当前正在执行的滚动时间戳
+  int _scrollingTimeStamp = 0;
+
+  ///is scrolling or not
+  bool isScrolling() {
+    return _isScrollingToIndex;
+  }
+
+  ///is scrolling approximate or not
+  bool isScrollingApproximate() {
+    return _isScrollingApproximate;
   }
 
   /// 滚动到指定索引
@@ -193,14 +210,18 @@ class AnchorScrollControllerHelper {
   }) async {
     assert(scrollSpeed > 0);
 
+    ///必要判断
     if (!scrollController.hasClients) {
       return;
     }
 
-    // 如果当前正在滚动到某个索引，停止它并
-    // 然后首先计算当前索引
+    ///设置一个滚动时间
+    int taskScrollingStamp = DateTime.now().millisecondsSinceEpoch;
+    _scrollingTimeStamp = taskScrollingStamp;
+
+    ///如果当前正在滚动到某个索引，停止它并
+    ///然后首先计算当前索引
     if (_isScrollingToIndex) {
-      _isScrollingToIndex = false;
       // 尚未找到中断滚动的 API。
       // 根据 [ScrollPosition.animateTo] 的描述，
       // 动画将在用户尝试手动滚动时中断，
@@ -216,10 +237,12 @@ class AnchorScrollControllerHelper {
       _currIndex = _getCurrIndex();
     }
 
+    ///设置正在滚动标志
     _isScrollingToIndex = true;
 
+    ///如果项目大小是固定的，目标偏移量是 index * fixedItemSize
     if (fixedItemSize != null) {
-      // 如果项目大小是固定的，目标偏移量是 index * fixedItemSize
+      _isScrollingApproximate = false;
       final targetOffset = index * fixedItemSize! -
           _getTotalAnchorOffset(anchorOffset: anchorOffset);
       final int scrollTime =
@@ -228,40 +251,26 @@ class AnchorScrollControllerHelper {
       final Duration duration = Duration(milliseconds: scrollTime);
       await scrollController.animateTo(targetOffset,
           duration: duration, curve: curve);
-    } else {
-      // 如果项目大小不是固定的，需要考虑两种情况。
-      // 1. 如果目标索引项目已经在视口中，我们可以直接获取目标偏移量
-      // 2. 如果目标索引项目不在视口中，我们应该滚动到视口中的第一个或最后一个项目。
-      //    然后我们将在视口中获得一些更接近目标项目的项目。
-      //    重复上述步骤，直到目标项目在视口中，然后我们可以获取其偏移量并滚动到它。
+    }
+
+    ///如果项目大小不是固定的，需要考虑两种情况。
+    ///1. 如果目标索引项目已经在视口中，我们可以直接获取目标偏移量
+    ///2. 如果目标索引项目不在视口中，我们应该滚动到视口中的第一个或最后一个项目。
+    ///   然后我们将在视口中获得一些更接近目标项目的项目。
+    ///   重复上述步骤，直到目标项目在视口中，然后我们可以获取其偏移量并滚动到它。ç
+    else {
       if (_itemMap.containsKey(index)) {
         ///直接尝试滚动到指定位置
+        _isScrollingApproximate = false;
         await _animateToIndexInViewport(
           index,
           scrollSpeed,
           curve,
           anchorOffset: _getTotalAnchorOffset(anchorOffset: anchorOffset),
         );
-
-        ///增加判断
-        int lastIndex = _currIndex;
-        while (_currIndex != index) {
-          await _animateToIndexInViewport(
-            index,
-            scrollSpeed,
-            curve,
-            anchorOffset: _getTotalAnchorOffset(anchorOffset: anchorOffset),
-          );
-          if (_currIndex == lastIndex) {
-            break;
-          }
-          lastIndex = _currIndex;
-          if (!_isScrollingToIndex) {
-            return;
-          }
-        }
       } else {
         ///逐步逼近目标index
+        _isScrollingApproximate = true;
         int tmpIndex = _currIndex;
         while (!_itemMap.containsKey(index)) {
           final sortedKeys = _itemMap.keys.toList()
@@ -279,10 +288,13 @@ class AnchorScrollControllerHelper {
             curve,
             alignment: alignment,
           );
-          if (!_isScrollingToIndex) {
+
+          ///任务执行已经切换到新的stamp,不用继续执行了
+          if (taskScrollingStamp != _scrollingTimeStamp) {
             return;
           }
         }
+        _isScrollingApproximate = false;
 
         ///最后滚动到指定位置
         await _animateToIndexInViewport(
@@ -293,8 +305,8 @@ class AnchorScrollControllerHelper {
         );
       }
 
-      //有时项目的偏移量可能会改变，例如，项目的高度在重建后改变，
-      //这使得它无法精确滚动到索引。因此，最后跳转到精确的偏移量。
+      ///有时项目的偏移量可能会改变，例如，项目的高度在重建后改变，
+      ///这使得它无法精确滚动到索引。因此，最后跳转到精确的偏移量。
       final targetScrollOffset = _getScrollOffset(
         index,
         anchorOffset: _getTotalAnchorOffset(anchorOffset: anchorOffset),
@@ -304,6 +316,7 @@ class AnchorScrollControllerHelper {
         scrollController.jumpTo(targetScrollOffset);
       }
 
+      ///set current index
       _currIndex = index;
       _isScrollingToIndex = false;
     }
@@ -354,7 +367,7 @@ class AnchorScrollControllerHelper {
     );
   }
 
-  /// 获取揭示目标索引的 [RevealedOffset]
+  ///获取揭示目标索引的 [RevealedOffset]
   RevealedOffset? _getOffsetToReveal(
     int index, {
     double alignment = 0,
@@ -375,18 +388,14 @@ class AnchorScrollControllerHelper {
 ///anchor scroll controller
 class AnchorScrollController extends ScrollController {
   AnchorScrollController({
-    double initialScrollOffset = 0.0,
-    bool keepScrollOffset = true,
-    String? debugLabel,
+    super.initialScrollOffset,
+    super.keepScrollOffset,
+    super.debugLabel,
     this.onIndexChanged,
     this.fixedItemSize,
     this.anchorOffsetAll = 0,
     double? pinOffset,
-  }) : super(
-          initialScrollOffset: initialScrollOffset,
-          keepScrollOffset: keepScrollOffset,
-          debugLabel: debugLabel,
-        ) {
+  }) {
     _helper = AnchorScrollControllerHelper(
       scrollController: this,
       anchorOffsetAll: anchorOffsetAll,
@@ -396,41 +405,51 @@ class AnchorScrollController extends ScrollController {
     );
   }
 
-  // 锚点偏移量
+  //锚点偏移量
   final double anchorOffsetAll;
 
-  // 固定的项目大小
+  //固定的项目大小
   final double? fixedItemSize;
 
-  // 索引更改时的回调
+  //索引更改时的回调
   final IndexChanged? onIndexChanged;
 
-  // 帮助类实例
+  //帮助类实例
   late final AnchorScrollControllerHelper _helper;
 
-  /// 添加索引监听器
+  ///添加索引监听器
   void addIndexListener(IndexChanged indexListener) {
     _helper.addIndexListener(indexListener);
   }
 
-  /// 移除索引监听器
+  ///移除索引监听器
   void removeIndexListener(IndexChanged indexListener) {
     _helper.removeIndexListener(indexListener);
   }
 
-  /// 添加项目
+  ///添加项目
   void addItem(int index, AnchorItemWrapperState state) {
     _helper.addItem(index, state);
   }
 
-  /// 移除项目
+  ///移除项目
   void removeItem(int index) {
     _helper.removeItem(index);
   }
 
-  /// 获取项目映射
+  ///获取项目映射
   Map<int, AnchorItemWrapperState> get itemMap {
     return _helper.itemMap;
+  }
+
+  ///获取是否在滚动状态
+  bool isScrolling() {
+    return _helper.isScrolling();
+  }
+
+  ///获取是否在滚动状态
+  bool isScrollingApproximate() {
+    return _helper.isScrollingApproximate();
   }
 
   @override

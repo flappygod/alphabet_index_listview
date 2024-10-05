@@ -34,7 +34,9 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(
+        title: 'FFFFF',
+      ),
     );
   }
 }
@@ -141,8 +143,8 @@ class _MyHomePageState extends State<MyHomePage> {
           footerView: Container(height: 50, color: Colors.red),
           stickHeader: true,
           dataList: generatedList!,
-          preferGroupHeight: 30,
-          preferChildHeight: 80,
+          // preferGroupHeight: 30,
+          // preferChildHeight: 80,
           onGroupSelected: (int index) {
             if (kDebugMode) {
               print("Group$index");
