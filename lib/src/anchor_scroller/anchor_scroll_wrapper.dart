@@ -92,7 +92,7 @@ class AnchorScrollViewWrapper extends InheritedWidget {
       scrollController: controller,
       fixedItemSize: fixedItemSize,
       onIndexChanged: onIndexChanged,
-      anchorOffset: anchorOffset,
+      anchorOffsetAll: anchorOffset,
       pinGroupTitleOffset: pinGroupTitleOffset,
     );
     // 初始化滚动监听器
@@ -173,15 +173,15 @@ class AnchorScrollViewWrapper extends InheritedWidget {
   // 滚动到指定索引
   Future<void> scrollToIndex({
     required int index,
-    double scrollSpeed = 2,
+    double scrollSpeed = 4,
     Curve curve = Curves.linear,
-    double deltaOffset = 0,
+    double anchorOffset = 0,
   }) async {
     _helper.scrollToIndex(
       index: index,
       scrollSpeed: scrollSpeed,
       curve: curve,
-      deltaOffset: deltaOffset,
+      anchorOffset: anchorOffset,
     );
   }
 

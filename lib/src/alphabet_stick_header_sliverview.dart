@@ -118,12 +118,12 @@ class AlphabetHeaderSliverViewController<T> {
 
     ///if group height prefer not set
     else {
-      double deltaOffset = _headerProvider!.provideHeightGroup(groupIndex);
+      double anchorOffset = _headerProvider!.provideHeightGroup(groupIndex);
       await _scrollController.scrollToIndex(
         index: index,
         scrollSpeed: scrollSpeed,
         curve: curve,
-        deltaOffset: -deltaOffset,
+        anchorOffset: anchorOffset,
       );
     }
   }
