@@ -36,7 +36,7 @@ class AlphabetHeaderListViewController<T> {
   ///scroll to group
   Future scrollToGroup(
     int groupIndex, {
-    double scrollSpeed = -1,
+    Duration duration = Duration.zero,
     Curve curve = Curves.linear,
   }) async {
     if (_headerProvider == null) {
@@ -51,7 +51,7 @@ class AlphabetHeaderListViewController<T> {
         _preferGroupHeight != 0 &&
         _preferChildHeight != null &&
         _preferChildHeight != 0 &&
-        scrollSpeed <= 0) {
+        duration == Duration.zero) {
       ///get group index
       double maxHeight =
           _headerProvider!.provideIndexTotalGroup() * _preferGroupHeight! +
@@ -70,7 +70,7 @@ class AlphabetHeaderListViewController<T> {
       ///get group index
       await _scrollController.scrollToIndex(
         index: index,
-        scrollSpeed: scrollSpeed,
+        duration: duration,
         curve: curve,
       );
     }
@@ -80,7 +80,7 @@ class AlphabetHeaderListViewController<T> {
   Future<void> scrollToChild(
     int groupIndex,
     int childIndex, {
-    double scrollSpeed = -1,
+    Duration duration = Duration.zero,
     Curve curve = Curves.linear,
   }) async {
     ///childIndex == 0 ,just scroll to group
@@ -101,7 +101,7 @@ class AlphabetHeaderListViewController<T> {
         _preferGroupHeight != 0 &&
         _preferChildHeight != null &&
         _preferChildHeight != 0 &&
-        scrollSpeed <= 0) {
+        duration == Duration.zero) {
       ///get total index
       double maxHeight =
           _headerProvider!.provideIndexTotalGroup() * _preferGroupHeight! +
@@ -123,7 +123,7 @@ class AlphabetHeaderListViewController<T> {
       double anchorOffset = _headerProvider!.provideHeightGroup(groupIndex);
       await _scrollController.scrollToIndex(
         index: index,
-        scrollSpeed: scrollSpeed,
+        duration: duration,
         curve: curve,
         anchorOffset: anchorOffset,
       );

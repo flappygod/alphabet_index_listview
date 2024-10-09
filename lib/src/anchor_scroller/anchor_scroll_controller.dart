@@ -4,7 +4,6 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'anchor_scroll_wrapper.dart';
 import 'dart:async';
-import 'dart:math';
 
 typedef IndexChanged = void Function(int index, bool userScroll);
 
@@ -204,12 +203,10 @@ class AnchorScrollControllerHelper {
   /// @param curve: 滚动动画
   Future<void> scrollToIndex({
     required int index,
-    double scrollSpeed = 4,
+    required Duration duration,
     Curve curve = Curves.linear,
     double anchorOffset = 0,
   }) async {
-    assert(scrollSpeed > 0);
-
     ///必要判断
     if (!scrollController.hasClients) {
       return;
@@ -245,12 +242,11 @@ class AnchorScrollControllerHelper {
       _isScrollingApproximate = false;
       final targetOffset = index * fixedItemSize! -
           _getTotalAnchorOffset(anchorOffset: anchorOffset);
-      final int scrollTime =
-          ((scrollController.offset - targetOffset).abs() / scrollSpeed)
-              .round();
-      final Duration duration = Duration(milliseconds: scrollTime);
-      await scrollController.animateTo(targetOffset,
-          duration: duration, curve: curve);
+      await scrollController.animateTo(
+        targetOffset,
+        duration: duration,
+        curve: curve,
+      );
     }
 
     ///如果项目大小不是固定的，需要考虑两种情况。
@@ -264,8 +260,8 @@ class AnchorScrollControllerHelper {
         _isScrollingApproximate = false;
         await _animateToIndexInViewport(
           index,
-          scrollSpeed,
           curve,
+          duration,
           anchorOffset: _getTotalAnchorOffset(anchorOffset: anchorOffset),
         );
       } else {
@@ -273,21 +269,30 @@ class AnchorScrollControllerHelper {
         _isScrollingApproximate = true;
         int tmpIndex = _currIndex;
         while (!_itemMap.containsKey(index)) {
-          final sortedKeys = _itemMap.keys.toList()
-            ..sort((first, second) => first.compareTo(second));
+          ///方向获取
+          double alignment = (tmpIndex < index) ? 1 : 0;
+          await _animateToIndexFast(
+            tmpIndex,
+            alignment: alignment,
+          );
+
+          ///滚动结束查看offset
+          final List<int> sortedKeys = _itemMap.keys.toList();
+
+          ///sort all list
+          sortedKeys.sort((first, second) => first.compareTo(second));
+
+          ///target index
           final targetIndex =
               (tmpIndex < index) ? sortedKeys.last : sortedKeys.first;
+
+          ///如果没有更多的，已经滚动到底了
           if (targetIndex == tmpIndex) {
             break;
           }
+
+          ///下一个item
           tmpIndex = targetIndex;
-          double alignment = (tmpIndex < index) ? 1 : 0;
-          await _animateToIndexInViewport(
-            tmpIndex,
-            scrollSpeed,
-            curve,
-            alignment: alignment,
-          );
 
           ///任务执行已经切换到新的stamp,不用继续执行了
           if (taskScrollingStamp != _scrollingTimeStamp) {
@@ -299,8 +304,8 @@ class AnchorScrollControllerHelper {
         ///最后滚动到指定位置
         await _animateToIndexInViewport(
           index,
-          scrollSpeed,
           curve,
+          duration,
           anchorOffset: _getTotalAnchorOffset(anchorOffset: anchorOffset),
         );
       }
@@ -323,10 +328,8 @@ class AnchorScrollControllerHelper {
   }
 
   /// 滚动到已经在视口中的索引项目
-  Future<void> _animateToIndexInViewport(
-    int index,
-    double scrollSpeed,
-    Curve curve, {
+  Future<void> _animateToIndexFast(
+    int index, {
     double alignment = 0,
     double anchorOffset = 0,
   }) async {
@@ -339,13 +342,32 @@ class AnchorScrollControllerHelper {
       return;
     }
 
-    final double totalOffset = targetOffset;
-    int scrollTime =
-        ((scrollController.offset - totalOffset).abs() / scrollSpeed).ceil();
-    scrollTime = max(scrollTime, 35);
-    final Duration duration = Duration(milliseconds: scrollTime);
+    ///direct jump to
+    scrollController.jumpTo(targetOffset);
+
+    ///delay
+    await Future.delayed(const Duration(milliseconds: 35));
+  }
+
+  /// 滚动到已经在视口中的索引项目
+  Future<void> _animateToIndexInViewport(
+    int index,
+    Curve curve,
+    Duration duration, {
+    double alignment = 0,
+    double anchorOffset = 0,
+  }) async {
+    final double? targetOffset = _getScrollOffset(
+      index,
+      alignment: alignment,
+      anchorOffset: anchorOffset,
+    );
+    if (targetOffset == null) {
+      return;
+    }
+
     await scrollController.animateTo(
-      totalOffset,
+      targetOffset,
       duration: duration,
       curve: curve,
     );
@@ -462,13 +484,13 @@ class AnchorScrollController extends ScrollController {
   /// 滚动到指定索引
   Future<void> scrollToIndex({
     required int index,
-    double scrollSpeed = 4,
+    required Duration duration,
     Curve curve = Curves.linear,
     double anchorOffset = 0,
   }) async {
     await _helper.scrollToIndex(
       index: index,
-      scrollSpeed: max(scrollSpeed, 1),
+      duration: duration,
       curve: curve,
       anchorOffset: anchorOffset,
     );

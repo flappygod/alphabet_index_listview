@@ -1,3 +1,3 @@
-## 1.0.25
+## 1.0.26
 
-1. Fix bugs in anchor scroll view and remove un need code.
+1. Fix bugs in anchor scroll view ，best set prefer height as possible.

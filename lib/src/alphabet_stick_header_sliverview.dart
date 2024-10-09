@@ -37,7 +37,7 @@ class AlphabetHeaderSliverViewController<T> {
   ///scroll to group
   Future scrollToGroup(
     int groupIndex, {
-    double scrollSpeed = -1,
+    Duration duration = Duration.zero,
     Curve curve = Curves.linear,
   }) async {
     if (_headerProvider == null) {
@@ -52,7 +52,7 @@ class AlphabetHeaderSliverViewController<T> {
         _preferGroupHeight != 0 &&
         _preferChildHeight != null &&
         _preferChildHeight != 0 &&
-        scrollSpeed <= 0) {
+        duration == Duration.zero) {
       ///get group index
       double maxHeight =
           _headerProvider!.provideIndexTotalGroup() * _preferGroupHeight! +
@@ -73,7 +73,7 @@ class AlphabetHeaderSliverViewController<T> {
     else {
       await _scrollController.scrollToIndex(
         index: index,
-        scrollSpeed: scrollSpeed,
+        duration: duration,
         curve: curve,
       );
     }
@@ -83,7 +83,7 @@ class AlphabetHeaderSliverViewController<T> {
   Future scrollToChild(
     int groupIndex,
     int childIndex, {
-    double scrollSpeed = -1,
+    Duration duration = Duration.zero,
     Curve curve = Curves.linear,
   }) async {
     ///childIndex == 0 ,just scroll to group
@@ -99,7 +99,7 @@ class AlphabetHeaderSliverViewController<T> {
         _preferGroupHeight != 0 &&
         _preferChildHeight != null &&
         _preferChildHeight != 0 &&
-        scrollSpeed <= 0) {
+        duration == Duration.zero) {
       ///get total index
       double maxHeight =
           _headerProvider!.provideIndexTotalGroup() * _preferGroupHeight! +
@@ -121,7 +121,7 @@ class AlphabetHeaderSliverViewController<T> {
       double anchorOffset = _headerProvider!.provideHeightGroup(groupIndex);
       await _scrollController.scrollToIndex(
         index: index,
-        scrollSpeed: scrollSpeed,
+        duration: duration,
         curve: curve,
         anchorOffset: anchorOffset,
       );

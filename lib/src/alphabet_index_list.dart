@@ -36,7 +36,7 @@ class AlphabetIndexListView<T> extends StatefulWidget {
   final List<String>? sideBarAlphabet;
 
   //scroll speed
-  final double indexedScrollSpeed;
+  final Duration indexedScrollDuration;
 
   //stick header
   final bool stickHeader;
@@ -87,8 +87,10 @@ class AlphabetIndexListView<T> extends StatefulWidget {
     double? indexedScrollSpeed,
   })  : this.preferGroupHeight = preferGroupHeight,
         this.preferChildHeight = preferChildHeight,
-        this.indexedScrollSpeed =
-            (preferGroupHeight != null && preferChildHeight != null) ? -1 : 10;
+        this.indexedScrollDuration =
+            (preferGroupHeight != null && preferChildHeight != null)
+                ? Duration.zero
+                : const Duration(milliseconds: 50);
 
   @override
   State<StatefulWidget> createState() {
@@ -245,7 +247,7 @@ class _AlphabetIndexListViewState<T> extends State<AlphabetIndexListView<T>> {
   void _scrollToGroup(int groupIndex) {
     _alphabetHeaderListViewController.scrollToGroup(
       groupIndex,
-      scrollSpeed: widget.indexedScrollSpeed,
+      duration: widget.indexedScrollDuration,
     );
   }
 }

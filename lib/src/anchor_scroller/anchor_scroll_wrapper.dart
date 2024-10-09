@@ -180,13 +180,13 @@ class AnchorScrollViewWrapper extends InheritedWidget {
   //滚动到指定索引
   Future<void> scrollToIndex({
     required int index,
-    double scrollSpeed = 4,
+    required Duration duration,
     Curve curve = Curves.linear,
     double anchorOffset = 0,
   }) async {
     _helper.scrollToIndex(
       index: index,
-      scrollSpeed: scrollSpeed,
+      duration: duration,
       curve: curve,
       anchorOffset: anchorOffset,
     );
