@@ -4,6 +4,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'anchor_scroll_wrapper.dart';
 import 'dart:async';
+import 'dart:math';
 
 typedef IndexChanged = void Function(int index, bool userScroll);
 
@@ -342,11 +343,16 @@ class AnchorScrollControllerHelper {
       return;
     }
 
-    ///direct jump to
-    scrollController.jumpTo(targetOffset);
-
-    ///delay
-    await Future.delayed(const Duration(milliseconds: 35));
+    final double totalOffset = targetOffset;
+    int scrollTime =
+        ((scrollController.offset - totalOffset).abs() / 10).ceil();
+    scrollTime = max(scrollTime, 35);
+    final Duration duration = Duration(milliseconds: scrollTime);
+    await scrollController.animateTo(
+      totalOffset,
+      duration: duration,
+      curve: Curves.linear,
+    );
   }
 
   /// 滚动到已经在视口中的索引项目
