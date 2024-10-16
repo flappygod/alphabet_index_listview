@@ -56,12 +56,6 @@ class AlphabetIndexSliverView<T> extends StatefulWidget {
   final ChildIndexGetter? findChildIndexCallback;
   final EdgeInsets? padding;
 
-  //scroll speed
-  final Duration indexedScrollDuration;
-
-  final double? preferGroupHeight;
-  final double? preferChildHeight;
-
   //index bar list view
   const AlphabetIndexSliverView({
     super.key,
@@ -90,15 +84,8 @@ class AlphabetIndexSliverView<T> extends StatefulWidget {
     this.findChildIndexCallback,
     this.padding,
     this.onGroupSelected,
-    double? preferGroupHeight,
-    double? preferChildHeight,
     double? indexedScrollSpeed,
-  })  : this.preferGroupHeight = preferGroupHeight,
-        this.preferChildHeight = preferChildHeight,
-        this.indexedScrollDuration =
-            (preferGroupHeight != null && preferChildHeight != null)
-                ? Duration.zero
-                : const Duration(milliseconds: 50);
+  });
 
   @override
   State<StatefulWidget> createState() {
@@ -118,11 +105,8 @@ class _AlphabetIndexSliverViewState<T>
 
   @override
   void initState() {
-    _alphabetHeaderListViewController = widget.controller ??
-        AlphabetHeaderSliverViewController(
-          preferGroupHeight: widget.preferGroupHeight,
-          preferChildHeight: widget.preferChildHeight,
-        );
+    _alphabetHeaderListViewController =
+        widget.controller ?? AlphabetHeaderSliverViewController();
     super.initState();
   }
 
@@ -258,7 +242,6 @@ class _AlphabetIndexSliverViewState<T>
   void _scrollToGroup(int groupIndex) {
     _alphabetHeaderListViewController.scrollToGroup(
       groupIndex,
-      duration: widget.indexedScrollDuration,
     );
   }
 }

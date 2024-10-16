@@ -1,3 +1,3 @@
-## 1.0.27
+## 1.0.28
 
-1. Fix bugs in anchor scroll view ，best set prefer height as possible.
+1. set preferGroupHeight and preferChildHeight in controller; 

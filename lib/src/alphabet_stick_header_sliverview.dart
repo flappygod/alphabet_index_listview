@@ -26,20 +26,27 @@ class AlphabetHeaderSliverViewController<T> {
   ///prefer child widget height
   double? _preferChildHeight;
 
+  ///scroll speed
+  Duration _indexedScrollDuration;
+  Curve _indexedScrollCurve;
+
   ///create list view controller
   AlphabetHeaderSliverViewController({
     double? preferGroupHeight,
     double? preferChildHeight,
+    Duration? indexedScrollDuration,
+    Curve? indexedScrollCurve,
   })  : _preferGroupHeight = preferGroupHeight,
         _preferChildHeight = preferChildHeight,
+        _indexedScrollDuration =
+            (preferGroupHeight != null && preferChildHeight != null)
+                ? Duration.zero
+                : (indexedScrollDuration ?? const Duration(milliseconds: 50)),
+        _indexedScrollCurve = indexedScrollCurve ?? Curves.linear,
         _scrollController = AnchorScrollController();
 
   ///scroll to group
-  Future scrollToGroup(
-    int groupIndex, {
-    Duration duration = Duration.zero,
-    Curve curve = Curves.linear,
-  }) async {
+  Future scrollToGroup(int groupIndex) async {
     if (_headerProvider == null) {
       return;
     }
@@ -51,8 +58,7 @@ class AlphabetHeaderSliverViewController<T> {
     if (_preferGroupHeight != null &&
         _preferGroupHeight != 0 &&
         _preferChildHeight != null &&
-        _preferChildHeight != 0 &&
-        duration == Duration.zero) {
+        _preferChildHeight != 0) {
       ///get group index
       double maxHeight =
           _headerProvider!.provideIndexTotalGroup() * _preferGroupHeight! +
@@ -73,8 +79,8 @@ class AlphabetHeaderSliverViewController<T> {
     else {
       await _scrollController.scrollToIndex(
         index: index,
-        duration: duration,
-        curve: curve,
+        duration: _indexedScrollDuration,
+        curve: _indexedScrollCurve,
       );
     }
   }
