@@ -45,11 +45,7 @@ class AlphabetHeaderListViewController<T> {
         _scrollController = AnchorScrollController();
 
   ///scroll to group
-  Future scrollToGroup(
-    int groupIndex, {
-    Duration duration = Duration.zero,
-    Curve curve = Curves.linear,
-  }) async {
+  Future scrollToGroup(int groupIndex) async {
     if (_headerProvider == null) {
       return;
     }
@@ -80,8 +76,8 @@ class AlphabetHeaderListViewController<T> {
       ///get group index
       await _scrollController.scrollToIndex(
         index: index,
-        duration: duration,
-        curve: curve,
+        duration: _indexedScrollDuration,
+        curve: _indexedScrollCurve,
       );
     }
   }
