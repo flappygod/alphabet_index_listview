@@ -246,8 +246,7 @@ class _AlphabetHeaderSliverViewState<T>
         } else {
           return AlphabetIndexTool.getItemIndexFromGroupPos(
                   widget.dataList, group) +
-              child +
-              1;
+              child;
         }
       },
 
