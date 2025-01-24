@@ -230,8 +230,7 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
         } else {
           return AlphabetIndexTool.getItemIndexFromGroupPos(
                   widget.dataList, group) +
-              child +
-              1;
+              child;
         }
       },
 
