@@ -1,3 +1,3 @@
-## 1.0.29
+## 1.0.30
 
-1. set preferGroupHeight and preferChildHeight in controller; 
+1. Fix a bug that may cause can't jump to index when setState.
