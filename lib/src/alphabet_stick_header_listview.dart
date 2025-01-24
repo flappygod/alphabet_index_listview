@@ -300,9 +300,13 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
 
   ///controller has changed
   void didUpdateWidget(AlphabetHeaderListView<T> oldWidget) {
-    ///remove former listener and add current
-    if (oldWidget.controller != widget.controller) {
+    ///older header provider removed
+    if (oldWidget.controller._headerProvider == _headerProvider) {
       oldWidget.controller._headerProvider = null;
+    }
+
+    ///set current header provider
+    if (widget.controller._headerProvider != _headerProvider) {
       widget.controller._headerProvider = _headerProvider;
     }
     if (widget.stickHeader) {
@@ -321,7 +325,9 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
   ///dispose
   void dispose() {
     UpdateFrameTool.instance.removeFrameListener(_frameUpdateListener);
-    widget.controller._headerProvider = null;
+    if (widget.controller._headerProvider == _headerProvider) {
+      widget.controller._headerProvider = null;
+    }
     _headerController.dispose();
     super.dispose();
   }
