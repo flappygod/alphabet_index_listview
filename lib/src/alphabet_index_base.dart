@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 ///Default Index data.
-const List<String> kDefaultAlphabets = const [
+const List<String> kDefaultAlphabets = [
   'A',
   'B',
   'C',
@@ -151,7 +151,7 @@ AlphabetIndexGroupBuilder kTipsBarDefault = (int groupIndex, String tag) {
     alignment: Alignment.center,
     child: Text(
       tag,
-      style: TextStyle(
+      style: const TextStyle(
         fontSize: 25,
         fontWeight: FontWeight.w500,
         color: Colors.black54,

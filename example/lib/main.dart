@@ -60,6 +60,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  AlphabetHeaderSliverViewController<String> controller =
+      AlphabetHeaderSliverViewController(
+    listViewController: AnchorScrollController(),
+  );
+
   List<String> dataList = List.from({
     "Alpha",
     "AlphaGo",
@@ -137,7 +142,8 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        child: AlphabetIndexSliverView(
+        child: AlphabetIndexSliverView<String>(
+          controller: controller,
           //child: AlphabetIndexSliverView(
           headerView: Container(height: 50, color: Colors.red),
           footerView: Container(height: 50, color: Colors.red),

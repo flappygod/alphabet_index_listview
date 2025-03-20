@@ -1,5 +1,4 @@
 import 'package:lpinyin/lpinyin.dart';
-
 import 'alphabet_index_base.dart';
 
 ///index bar name provider

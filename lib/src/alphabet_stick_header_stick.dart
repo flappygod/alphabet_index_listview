@@ -70,7 +70,7 @@ class UpdateFrameTool {
   }
 
   ///listeners
-  List<VoidCallback> _listeners = [];
+  final List<VoidCallback> _listeners = [];
 
   ///add frame listener
   void addFrameListener(VoidCallback callback) {
@@ -143,6 +143,7 @@ class _AlphabetHeaderListViewStickViewState<T>
   int? _childGroup;
 
   ///init state
+  @override
   void initState() {
     _listener = () {
       setState(() {});
@@ -165,6 +166,7 @@ class _AlphabetHeaderListViewStickViewState<T>
   }
 
   ///update to reset listener
+  @override
   void didUpdateWidget(AlphabetHeaderListViewStickView<T> oldWidget) {
     _child = null;
     _childGroup = null;
@@ -176,6 +178,7 @@ class _AlphabetHeaderListViewStickViewState<T>
   }
 
   ///dispose
+  @override
   void dispose() {
     widget.stickOffsetController.removeListener(_listener);
     super.dispose();

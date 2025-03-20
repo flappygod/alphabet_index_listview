@@ -66,6 +66,7 @@ class AlphabetIndexTipBar extends StatefulWidget {
 class _AlphabetIndexTipBarState extends State<AlphabetIndexTipBar> {
   late VoidCallback _listener;
 
+  @override
   void initState() {
     _listener = () {
       setState(() {});
@@ -74,6 +75,7 @@ class _AlphabetIndexTipBarState extends State<AlphabetIndexTipBar> {
     super.initState();
   }
 
+  @override
   void didUpdateWidget(AlphabetIndexTipBar oldWidget) {
     if (oldWidget.controller != widget.controller) {
       oldWidget.controller.removeListener(_listener);
@@ -82,6 +84,7 @@ class _AlphabetIndexTipBarState extends State<AlphabetIndexTipBar> {
     super.didUpdateWidget(oldWidget);
   }
 
+  @override
   void dispose() {
     widget.controller.removeListener(_listener);
     super.dispose();

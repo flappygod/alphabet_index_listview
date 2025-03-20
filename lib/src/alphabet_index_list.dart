@@ -1,12 +1,12 @@
 import 'package:alphabet_index_listview/alphabet_index_listview.dart';
+import 'alphabet_index_tip_side_bar.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'alphabet_index_sidebar.dart';
 
 ///index bar list view
 class AlphabetIndexListView<T> extends StatefulWidget {
   //controller
-  final AlphabetHeaderListViewController<T>? controller;
+  final AlphabetHeaderListViewController<T> controller;
 
   //group builder
   final AlphabetIndexGroupBuilder groupBuilder;
@@ -49,11 +49,13 @@ class AlphabetIndexListView<T> extends StatefulWidget {
   final String? restorationId;
   final ChildIndexGetter? findChildIndexCallback;
   final EdgeInsets? padding;
+  //side bar enable
+  final bool indexSideBarEnable;
 
   //index bar list view
   const AlphabetIndexListView({
     super.key,
-    this.controller,
+    required this.controller,
     required this.dataList,
     required this.groupBuilder,
     required this.childBuilder,
@@ -76,6 +78,7 @@ class AlphabetIndexListView<T> extends StatefulWidget {
     this.findChildIndexCallback,
     this.padding,
     this.onGroupSelected,
+    this.indexSideBarEnable = true,
   });
 
   @override
@@ -86,28 +89,9 @@ class AlphabetIndexListView<T> extends StatefulWidget {
 
 ///index bar list view
 class _AlphabetIndexListViewState<T> extends State<AlphabetIndexListView<T>> {
-  ///head stick view controller
-  late AlphabetHeaderListViewController<T> _alphabetHeaderListViewController;
-
   ///tips bar controller
   final AlphabetIndexTipBarController _indexTipBarController =
       AlphabetIndexTipBarController();
-
-  @override
-  void initState() {
-    _alphabetHeaderListViewController =
-        widget.controller ?? AlphabetHeaderListViewController();
-    super.initState();
-  }
-
-  ///update widget if need
-  void didUpdateWidget(AlphabetIndexListView<T> oldWidget) {
-    if (_alphabetHeaderListViewController != widget.controller) {
-      _alphabetHeaderListViewController =
-          widget.controller ?? _alphabetHeaderListViewController;
-    }
-    super.didUpdateWidget(oldWidget);
-  }
 
   @override
   void dispose() {
@@ -122,8 +106,7 @@ class _AlphabetIndexListViewState<T> extends State<AlphabetIndexListView<T>> {
       clipBehavior: Clip.none,
       children: [
         _buildListView(),
-        _buildIndexBar(),
-        _buildTipsBar(),
+        _buildSideTipsBar(),
       ],
     );
   }
@@ -134,7 +117,7 @@ class _AlphabetIndexListViewState<T> extends State<AlphabetIndexListView<T>> {
       onGroupSelected: widget.onGroupSelected,
       stickHeader: widget.stickHeader,
       dataList: widget.dataList,
-      controller: _alphabetHeaderListViewController,
+      controller: widget.controller,
       groupBuilder: widget.groupBuilder,
       childBuilder: widget.childBuilder,
       addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
@@ -152,84 +135,20 @@ class _AlphabetIndexListViewState<T> extends State<AlphabetIndexListView<T>> {
     );
   }
 
-  ///build index bar
-  Widget _buildIndexBar() {
-    ///get tags
-    List<String> sideBarTags =
-        widget.sideBarAlphabet ?? widget.dataList.map((e) => e.tag).toList();
-
-    ///alphabet index side bar
-    return AlphabetIndexSideBar(
-      sideBarTags: sideBarTags,
-      sideBarAlign: widget.sideBarAlign,
-      sideBarBuilder: widget.sideBarBuilder,
-      onChange: (String tag) {},
-      onGestureStart: () {
-        _indexTipBarController.isGesture = true;
-      },
-      onGestureEnd: () {
-        _indexTipBarController.isGesture = false;
-      },
-      onPositionChange: (Size currentSize, String currentTag, int currentIndex,
-          double offsetFromCenter) {
-        ///now we calculate the data list tags list , the side bar tags may not the same with data tags!
-        List<String> dataTags = widget.dataList.map((e) => e.tag).toList();
-        int dataIndex = dataTags.indexOf(currentTag);
-        if (dataIndex != -1) {
-          _scrollToGroup(dataIndex);
-        }
-
-        ///set tips bar align offset
-        switch (widget.tipsBarAlign) {
-          case AlphabetIndexTipsAlign.center:
-            _indexTipBarController.setGroup(currentTag, currentIndex, 0, 0);
-            break;
-          case AlphabetIndexTipsAlign.leftFollowSideBar:
-            _indexTipBarController.setGroup(
-              currentTag,
-              currentIndex,
-              widget.sideBarAlign == AlphabetIndexSideAlign.left
-                  ? currentSize.width
-                  : 0,
-              offsetFromCenter,
-            );
-            break;
-          case AlphabetIndexTipsAlign.rightFollowSideBar:
-            _indexTipBarController.setGroup(
-              currentTag,
-              currentIndex,
-              widget.sideBarAlign == AlphabetIndexSideAlign.right
-                  ? -currentSize.width
-                  : 0,
-              offsetFromCenter,
-            );
-            break;
-          case AlphabetIndexTipsAlign.centerFollowSideBar:
-            _indexTipBarController.setGroup(
-              currentTag,
-              currentIndex,
-              0,
-              offsetFromCenter,
-            );
-            break;
-        }
-      },
-    );
-  }
-
-  ///build tips bar
-  Widget _buildTipsBar() {
-    return AlphabetIndexTipBar(
-      controller: _indexTipBarController,
-      tipsBarAlign: widget.tipsBarAlign,
-      tipsBuilder: widget.tipsBuilder,
-    );
-  }
-
-  ///jump to group
-  void _scrollToGroup(int groupIndex) {
-    _alphabetHeaderListViewController.scrollToGroup(
-      groupIndex,
-    );
+  ///build side tips bar
+  Widget _buildSideTipsBar() {
+    if (widget.indexSideBarEnable) {
+      return AlphabetIndexTipSideBar(
+        sideBarAlphabet: widget.sideBarAlphabet ??
+            widget.dataList.map((e) => e.tag).toList(),
+        controller: widget.controller,
+        sideBarAlign: widget.sideBarAlign,
+        sideBarBuilder: widget.sideBarBuilder,
+        tipsBarAlign: widget.tipsBarAlign,
+        tipsBuilder: widget.tipsBuilder,
+      );
+    } else {
+      return const SizedBox();
+    }
   }
 }

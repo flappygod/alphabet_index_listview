@@ -11,24 +11,24 @@ import 'dart:math';
 
 ///group list view controller
 class AlphabetHeaderSliverViewController<T> {
-  ///scroll controller
-  AnchorScrollController _scrollController;
+  ///anchor scroll controller controller
+  final AnchorScrollController _listViewController;
 
   ///get scroll controller
-  AnchorScrollController get scrollController => _scrollController;
+  AnchorScrollController get listviewController => _listViewController;
 
   ///index provider
   AlphabetHeaderProviderInterface? _headerProvider;
 
   ///prefer group widget height
-  double? _preferGroupHeight;
+  final double? _preferGroupHeight;
 
   ///prefer child widget height
-  double? _preferChildHeight;
+  final double? _preferChildHeight;
 
   ///scroll speed
-  Duration _indexedScrollDuration;
-  Curve _indexedScrollCurve;
+  final Duration _indexedScrollDuration;
+  final Curve _indexedScrollCurve;
 
   ///create list view controller
   AlphabetHeaderSliverViewController({
@@ -36,6 +36,7 @@ class AlphabetHeaderSliverViewController<T> {
     double? preferChildHeight,
     Duration? indexedScrollDuration,
     Curve? indexedScrollCurve,
+    required AnchorScrollController listViewController,
   })  : _preferGroupHeight = preferGroupHeight,
         _preferChildHeight = preferChildHeight,
         _indexedScrollDuration =
@@ -43,7 +44,7 @@ class AlphabetHeaderSliverViewController<T> {
                 ? Duration.zero
                 : (indexedScrollDuration ?? const Duration(milliseconds: 50)),
         _indexedScrollCurve = indexedScrollCurve ?? Curves.linear,
-        _scrollController = AnchorScrollController();
+        _listViewController = listViewController;
 
   ///scroll to group
   Future scrollToGroup(int groupIndex) async {
@@ -72,12 +73,12 @@ class AlphabetHeaderSliverViewController<T> {
           (index - groupIndex) * _preferChildHeight! +
           _headerProvider!.provideHeightHeaderView() +
           _headerProvider!.provideHeightTopPadding();
-      _scrollController.jumpTo(min(height, max(maxHeight, 0)));
+      listviewController.jumpTo(min(height, max(maxHeight, 0)));
     }
 
     ///if group height prefer not set
     else {
-      await _scrollController.scrollToIndex(
+      await listviewController.scrollToIndex(
         index: index,
         duration: _indexedScrollDuration,
         curve: _indexedScrollCurve,
@@ -119,13 +120,13 @@ class AlphabetHeaderSliverViewController<T> {
           (index - groupIndex) * _preferChildHeight! +
           _headerProvider!.provideHeightHeaderView() +
           _headerProvider!.provideHeightTopPadding();
-      _scrollController.jumpTo(min(height, max(maxHeight, 0)));
+      listviewController.jumpTo(min(height, max(maxHeight, 0)));
     }
 
     ///if group height prefer not set
     else {
       double anchorOffset = _headerProvider!.provideHeightGroup(groupIndex);
-      await _scrollController.scrollToIndex(
+      await listviewController.scrollToIndex(
         index: index,
         duration: duration,
         curve: curve,
@@ -210,10 +211,10 @@ class _AlphabetHeaderSliverViewState<T>
       "alphabet_index_list_view_stick_header_index_prefix";
 
   ///scroll key
-  GlobalKey _scrollKey = GlobalKey();
+  final GlobalKey _scrollKey = GlobalKey();
 
   ///group key
-  GlobalKey _groupKey = GlobalKey();
+  final GlobalKey _groupKey = GlobalKey();
 
   ///header key
   final GlobalKey _headerKey = GlobalKey();
@@ -314,22 +315,19 @@ class _AlphabetHeaderSliverViewState<T>
   }
 
   ///init state
+  @override
   void initState() {
     _initControllers();
     super.initState();
   }
 
   ///controller has changed
+  @override
   void didUpdateWidget(AlphabetHeaderSliverView<T> oldWidget) {
     ///remove former listener and add current
     if (oldWidget.controller != widget.controller) {
       oldWidget.controller._headerProvider = null;
       widget.controller._headerProvider = _headerProvider;
-    }
-    if (widget.stickHeader) {
-      _scrollKey = GlobalKey();
-      _groupKey = GlobalKey();
-      widget.controller._scrollController = AnchorScrollController();
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _groupPositionList.clear();
@@ -340,6 +338,7 @@ class _AlphabetHeaderSliverViewState<T>
   }
 
   ///dispose
+  @override
   void dispose() {
     UpdateFrameTool.instance.removeFrameListener(_frameUpdateListener);
     widget.controller._headerProvider = null;
@@ -376,7 +375,7 @@ class _AlphabetHeaderSliverViewState<T>
       },
       child: CustomScrollView(
         key: _scrollKey,
-        controller: widget.controller._scrollController,
+        controller: widget.controller._listViewController,
         physics: widget.physics,
         cacheExtent: widget.cacheExtent,
         dragStartBehavior: widget.dragStartBehavior,
@@ -432,8 +431,8 @@ class _AlphabetHeaderSliverViewState<T>
                 }
                 return AnchorItemWrapper(
                   index: index,
-                  key: ValueKey(_uniqueStr + "." + index.toString()),
-                  controller: widget.controller.scrollController,
+                  key: ValueKey("$_uniqueStr.$index"),
+                  controller: widget.controller.listviewController,
                   child: indexItem,
                 );
               },
@@ -470,15 +469,15 @@ class _AlphabetHeaderSliverViewState<T>
     int groupIndex =
         AlphabetIndexTool.getItemIndexFromGroupPos(widget.dataList, index);
     AnchorItemWrapperState? data =
-        widget.controller._scrollController.itemMap[groupIndex];
+        widget.controller.listviewController.itemMap[groupIndex];
     RenderBox? itemBox = data?.context.findRenderObject() as RenderBox?;
-    Offset? offset = itemBox?.localToGlobal(Offset(0.0, 0.0));
+    Offset? offset = itemBox?.localToGlobal(const Offset(0.0, 0.0));
     if (offset != null && itemBox != null) {
       return Rect.fromLTWH(
         offset.dx,
         offset.dy -
             listViewHeight +
-            widget.controller._scrollController.position.pixels,
+            widget.controller.listviewController.position.pixels,
         itemBox.size.width,
         itemBox.size.height,
       );
@@ -571,12 +570,12 @@ class _AlphabetHeaderSliverViewState<T>
 
   ///refresh
   void _refreshGroupAndOffset() {
-    if (!widget.controller.scrollController.hasClients) {
+    if (!widget.controller.listviewController.hasClients) {
       return;
     }
 
     ///get pixels
-    double scrollOffset = widget.controller.scrollController.position.pixels;
+    double scrollOffset = widget.controller.listviewController.position.pixels;
 
     ///current offset
     double currentOffset = 0;
