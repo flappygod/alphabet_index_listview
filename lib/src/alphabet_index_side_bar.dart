@@ -24,7 +24,7 @@ class AlphabetIndexSideBar extends StatefulWidget {
   final AlphabetIndexSideAlign sideBarAlign;
 
   //on change
-  final AlphabetIndexTagChanged onChange;
+  final AlphabetIndexTagChanged? onChange;
 
   //position change
   final AlphabetIndexPositionChanged onPositionChange;
@@ -39,10 +39,10 @@ class AlphabetIndexSideBar extends StatefulWidget {
     super.key,
     required this.sideBarTags,
     required this.sideBarAlign,
-    required this.onChange,
     required this.onGestureStart,
     required this.onGestureEnd,
     required this.onPositionChange,
+    this.onChange,
     this.sideBarBuilder,
   });
 
@@ -110,6 +110,7 @@ class _AlphabetIndexSideBarState extends State<AlphabetIndexSideBar> {
           _checkAlphabet(
             widget.sideBarTags,
             details.localPosition.dy,
+            forceTrigger: true,
           );
         },
         onPanStart: (DragStartDetails details) {
@@ -152,7 +153,11 @@ class _AlphabetIndexSideBarState extends State<AlphabetIndexSideBar> {
   }
 
   ///check alphabet and jump
-  void _checkAlphabet(List<String> tags, double offset) {
+  void _checkAlphabet(
+    List<String> tags,
+    double offset, {
+    bool forceTrigger = false,
+  }) {
     if (_tagsKey.currentContext?.size?.height != null) {
       //height
       double height = _tagsKey.currentContext!.size!.height;
@@ -165,7 +170,10 @@ class _AlphabetIndexSideBarState extends State<AlphabetIndexSideBar> {
       String indexTag = tags[sideBarIndex];
 
       ///on changed
-      if (_selectedTag != indexTag) {
+      if (_selectedTag != indexTag || forceTrigger) {
+        if (widget.onChange != null) {
+          widget.onChange!(indexTag);
+        }
         _selectedTag = indexTag;
         widget.onPositionChange(
           _tagsKey.currentContext!.size!,

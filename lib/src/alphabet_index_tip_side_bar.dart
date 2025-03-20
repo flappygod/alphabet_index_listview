@@ -27,6 +27,9 @@ class AlphabetIndexTipSideBar extends StatefulWidget {
   final Curve? curve;
   final Duration? duration;
 
+  //on change
+  final AlphabetIndexTagChanged? onChange;
+
   const AlphabetIndexTipSideBar({
     super.key,
     required this.sideBarAlphabet,
@@ -37,6 +40,7 @@ class AlphabetIndexTipSideBar extends StatefulWidget {
     this.sideBarBuilder,
     this.curve,
     this.duration,
+    this.onChange,
   });
 
   @override
@@ -73,7 +77,7 @@ class _AlphabetIndexTipSideBarState extends State<AlphabetIndexTipSideBar> {
       sideBarTags: sideBarTags,
       sideBarAlign: widget.sideBarAlign,
       sideBarBuilder: widget.sideBarBuilder,
-      onChange: (String tag) {},
+      onChange: widget.onChange,
       onGestureStart: () {
         _indexTipBarController.isGesture = true;
       },
