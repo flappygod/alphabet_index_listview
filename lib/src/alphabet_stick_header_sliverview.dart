@@ -182,7 +182,6 @@ class _AlphabetHeaderSliverViewState<T>
   void didUpdateWidget(AlphabetHeaderSliverView<T> oldWidget) {
     ///remove former listener and add current
     if (oldWidget.controller != widget.controller) {
-      oldWidget.controller.headerProvider = null;
       widget.controller.headerProvider = _headerProvider;
     }
     if (widget.stickHeader) {
@@ -205,7 +204,6 @@ class _AlphabetHeaderSliverViewState<T>
   @override
   void dispose() {
     UpdateFrameTool.instance.removeFrameListener(_frameUpdateListener);
-    widget.controller.headerProvider = null;
     _headerController.dispose();
     super.dispose();
   }
