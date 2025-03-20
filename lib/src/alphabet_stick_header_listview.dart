@@ -1,143 +1,13 @@
-import 'anchor_scroller/anchor_scroll_controller.dart';
+import '../alphabet_index_listview.dart';
 import 'anchor_scroller/anchor_scroll_wrapper.dart';
 import 'alphabet_stick_header_stick.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
-import 'alphabet_index_base.dart';
-import 'alphabet_index_tool.dart';
-import 'dart:async';
-import 'dart:math';
-
-///group list view controller
-class AlphabetHeaderListViewController<T> {
-  ///scroll controller
-  AnchorScrollController _listViewController;
-
-  ///get scroll controller
-  AnchorScrollController get listViewController => _listViewController;
-
-  ///index provider
-  AlphabetHeaderProviderInterface? _headerProvider;
-
-  ///prefer group widget height
-  double? _preferGroupHeight;
-
-  ///prefer child widget height
-  double? _preferChildHeight;
-
-  ///scroll speed
-  Duration _indexedScrollDuration;
-  Curve _indexedScrollCurve;
-
-  ///create list view controller
-  AlphabetHeaderListViewController({
-    double? preferGroupHeight,
-    double? preferChildHeight,
-    Duration? indexedScrollDuration,
-    Curve? indexedScrollCurve,
-  })  : _preferGroupHeight = preferGroupHeight,
-        _preferChildHeight = preferChildHeight,
-        _indexedScrollDuration =
-            (preferGroupHeight != null && preferChildHeight != null)
-                ? Duration.zero
-                : (indexedScrollDuration ?? const Duration(milliseconds: 50)),
-        _indexedScrollCurve = indexedScrollCurve ?? Curves.linear,
-        _listViewController = AnchorScrollController();
-
-  ///scroll to group
-  Future scrollToGroup(int groupIndex) async {
-    if (_headerProvider == null) {
-      return;
-    }
-
-    ///get index
-    int index = _headerProvider!.provideIndex(groupIndex);
-
-    ///group
-    if (_preferGroupHeight != null &&
-        _preferGroupHeight != 0 &&
-        _preferChildHeight != null &&
-        _preferChildHeight != 0) {
-      ///get group index
-      double maxHeight =
-          _headerProvider!.provideIndexTotalGroup() * _preferGroupHeight! +
-              _headerProvider!.provideIndexTotalChild() * _preferChildHeight! -
-              _headerProvider!.provideHeightTotalList() +
-              _headerProvider!.provideHeightHeaderView() +
-              _headerProvider!.provideHeightFooterView() +
-              _headerProvider!.provideHeightTopPadding() +
-              _headerProvider!.provideHeightBottomPadding();
-      double height = groupIndex * _preferGroupHeight! +
-          (index - groupIndex) * _preferChildHeight! +
-          _headerProvider!.provideHeightHeaderView() +
-          _headerProvider!.provideHeightTopPadding();
-      _listViewController.jumpTo(min(height, max(maxHeight, 0)));
-    } else {
-      ///get group index
-      await _listViewController.scrollToIndex(
-        index: index,
-        duration: _indexedScrollDuration,
-        curve: _indexedScrollCurve,
-      );
-    }
-  }
-
-  ///scroll to child
-  Future<void> scrollToChild(
-    int groupIndex,
-    int childIndex,
-  ) async {
-    ///childIndex == 0 ,just scroll to group
-    if (childIndex == 0) {
-      return scrollToGroup(groupIndex);
-    }
-
-    ///scroll provider is null
-    if (_headerProvider == null) {
-      return;
-    }
-
-    ///get index
-    int index = _headerProvider!.provideIndex(groupIndex, child: childIndex);
-
-    ///if group height prefer set
-    if (_preferGroupHeight != null &&
-        _preferGroupHeight != 0 &&
-        _preferChildHeight != null &&
-        _preferChildHeight != 0) {
-      ///get total index
-      double maxHeight =
-          _headerProvider!.provideIndexTotalGroup() * _preferGroupHeight! +
-              _headerProvider!.provideIndexTotalChild() * _preferChildHeight! +
-              _headerProvider!.provideHeightHeaderView() +
-              _headerProvider!.provideHeightFooterView() +
-              _headerProvider!.provideHeightTopPadding() +
-              _headerProvider!.provideHeightBottomPadding() -
-              _headerProvider!.provideHeightTotalList();
-      double height = groupIndex * _preferGroupHeight! +
-          (index - groupIndex) * _preferChildHeight! +
-          _headerProvider!.provideHeightHeaderView() +
-          _headerProvider!.provideHeightTopPadding();
-      _listViewController.jumpTo(min(height, max(maxHeight, 0)));
-    }
-
-    ///if group height prefer not set
-    else {
-      double anchorOffset = _headerProvider!.provideHeightGroup(groupIndex);
-      await _listViewController.scrollToIndex(
-        index: index,
-        duration: _indexedScrollDuration,
-        curve: _indexedScrollCurve,
-        anchorOffset: anchorOffset,
-      );
-    }
-  }
-}
 
 ///group list view
 class AlphabetHeaderListView<T> extends StatefulWidget {
   //controller
-  final AlphabetHeaderListViewController<T> controller;
+  final AlphabetHeaderViewController<T> controller;
 
   //group builder
   final AlphabetIndexGroupBuilder groupBuilder;
@@ -244,19 +114,6 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
         return AlphabetIndexTool.getItemTotalChildCount(widget.dataList);
       },
 
-      ///provide group height
-      provideHeightGroupFunc: (group) {
-        GroupPosition? groupPosition = _groupPositionList[group];
-        if (groupPosition != null) {
-          return groupPosition.endPosition - groupPosition.startPosition;
-        }
-        GroupPosition? firstOne = _groupPositionList[0];
-        if (firstOne != null) {
-          return firstOne.endPosition - firstOne.startPosition;
-        }
-        return _groupKey.currentContext?.size?.height ?? 0;
-      },
-
       ///provide total list height
       provideHeightTotalListFunc: () {
         return _scrollKey.currentContext?.size?.height ?? 0;
@@ -282,7 +139,7 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
         return widget.padding?.bottom ?? 0;
       },
     );
-    widget.controller._headerProvider = _headerProvider;
+    widget.controller.headerProvider = _headerProvider;
 
     ///update frame and calculate all groups position if need
     _frameUpdateListener = () {
@@ -299,14 +156,18 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
 
   ///controller has changed
   void didUpdateWidget(AlphabetHeaderListView<T> oldWidget) {
-    ///older header provider removed
-    if (oldWidget.controller._headerProvider == _headerProvider) {
-      oldWidget.controller._headerProvider = null;
+    ///remove former listener and add current
+    if (oldWidget.controller != widget.controller) {
+      oldWidget.controller.headerProvider = null;
+      widget.controller.headerProvider = _headerProvider;
     }
-
-    ///set current header provider
-    if (widget.controller._headerProvider != _headerProvider) {
-      widget.controller._headerProvider = _headerProvider;
+    if (widget.stickHeader) {
+      _scrollKey = GlobalKey();
+      _groupKey = GlobalKey();
+      widget.controller.listViewController = AnchorScrollController(
+        initialScrollOffset:
+            oldWidget.controller.listViewController.position.pixels,
+      );
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _groupPositionList.clear();
@@ -319,9 +180,7 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
   ///dispose
   void dispose() {
     UpdateFrameTool.instance.removeFrameListener(_frameUpdateListener);
-    if (widget.controller._headerProvider == _headerProvider) {
-      widget.controller._headerProvider = null;
-    }
+    widget.controller.headerProvider = null;
     _headerController.dispose();
     super.dispose();
   }
@@ -355,7 +214,7 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
       },
       child: ListView.builder(
         key: _scrollKey,
-        controller: widget.controller._listViewController,
+        controller: widget.controller.listViewController,
         itemCount: AlphabetIndexTool.getItemIndexCount(widget.dataList),
         addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
         addRepaintBoundaries: widget.addRepaintBoundaries,
@@ -415,7 +274,7 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
     int groupIndex =
         AlphabetIndexTool.getItemIndexFromGroupPos(widget.dataList, index);
     AnchorItemWrapperState? data =
-        widget.controller._listViewController.itemMap[groupIndex];
+        widget.controller.listViewController.itemMap[groupIndex];
     RenderBox? itemBox = data?.context.findRenderObject() as RenderBox?;
     Offset? offset = itemBox?.localToGlobal(Offset(0.0, 0.0));
     if (offset != null && itemBox != null) {
@@ -423,7 +282,7 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
         offset.dx,
         offset.dy -
             listViewHeight +
-            widget.controller._listViewController.position.pixels,
+            widget.controller.listViewController.position.pixels,
         itemBox.size.width,
         itemBox.size.height,
       );
@@ -434,13 +293,13 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
 
   ///get the group item prefer offset
   Rect? _getGroupItemPreferRect(int index) {
-    if (widget.controller._preferGroupHeight != null &&
-        widget.controller._preferChildHeight != null) {
+    if (widget.controller.preferGroupHeight != null &&
+        widget.controller.preferChildHeight != null) {
       ///calculate prefer height offset
-      double top = index * widget.controller._preferGroupHeight! +
+      double top = index * widget.controller.preferGroupHeight! +
           (AlphabetIndexTool.getItemIndexFromGroupPos(widget.dataList, index) -
                   index) *
-              widget.controller._preferChildHeight!;
+              widget.controller.preferChildHeight!;
 
       ///offset
       double offset = (widget.padding?.top ?? 0);
@@ -449,7 +308,7 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
         0,
         top + offset,
         MediaQuery.of(context).size.width,
-        widget.controller._preferGroupHeight!,
+        widget.controller.preferGroupHeight!,
       );
     }
     return null;
@@ -477,8 +336,8 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
     }
 
     //if we set the prefer child height and prefer group height, just calculate all offsets
-    if (widget.controller._preferChildHeight != null &&
-        widget.controller._preferGroupHeight != null) {
+    if (widget.controller.preferChildHeight != null &&
+        widget.controller.preferGroupHeight != null) {
       Map<int, GroupPosition> preferMap = {};
       for (int s = 0; s < widget.dataList.length; s++) {
         Rect? itemGroupRect = _getGroupItemPreferRect(s);

@@ -1,4 +1,4 @@
-import 'alphabet_stick_header_sliverview.dart';
+import 'alphabet_index_header_controller.dart';
 import 'package:flutter/cupertino.dart';
 import 'alphabet_index_side_bar.dart';
 import 'alphabet_index_tip_bar.dart';
@@ -10,7 +10,7 @@ class AlphabetIndexTipSideBar extends StatefulWidget {
   final List<String> sideBarAlphabet;
 
   //controller
-  final AlphabetHeaderSliverViewController controller;
+  final AlphabetHeaderViewController controller;
 
   //align
   final AlphabetIndexTipsAlign tipsBarAlign;
@@ -24,6 +24,9 @@ class AlphabetIndexTipSideBar extends StatefulWidget {
   //side bar builder
   final AlphabetIndexSideBuilder? sideBarBuilder;
 
+  final Curve? curve;
+  final Duration? duration;
+
   const AlphabetIndexTipSideBar({
     super.key,
     required this.sideBarAlphabet,
@@ -32,6 +35,8 @@ class AlphabetIndexTipSideBar extends StatefulWidget {
     this.tipsBuilder,
     this.sideBarAlign = AlphabetIndexSideAlign.right,
     this.sideBarBuilder,
+    this.curve,
+    this.duration,
   });
 
   @override
@@ -83,6 +88,8 @@ class _AlphabetIndexTipSideBarState extends State<AlphabetIndexTipSideBar> {
         if (dataIndex != -1) {
           widget.controller.scrollToGroup(
             dataIndex,
+            curve: widget.curve,
+            duration: widget.duration,
           );
         }
 

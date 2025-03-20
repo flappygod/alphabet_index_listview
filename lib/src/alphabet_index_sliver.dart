@@ -1,3 +1,4 @@
+import 'alphabet_index_header_controller.dart';
 import 'alphabet_stick_header_sliverview.dart';
 import 'alphabet_index_tip_side_bar.dart';
 import 'package:flutter/gestures.dart';
@@ -8,7 +9,7 @@ import 'alphabet_index_base.dart';
 ///index bar list view
 class AlphabetIndexSliverView<T> extends StatefulWidget {
   //controller
-  final AlphabetHeaderSliverViewController<T> controller;
+  final AlphabetHeaderViewController<T> controller;
 
   //group builder
   final AlphabetIndexGroupBuilder groupBuilder;
@@ -60,6 +61,8 @@ class AlphabetIndexSliverView<T> extends StatefulWidget {
 
   //side bar enable
   final bool indexSideBarEnable;
+  final Curve? curve;
+  final Duration? duration;
 
   //index bar list view
   const AlphabetIndexSliverView({
@@ -90,6 +93,8 @@ class AlphabetIndexSliverView<T> extends StatefulWidget {
     this.padding,
     this.onGroupSelected,
     this.indexSideBarEnable = true,
+    this.curve,
+    this.duration,
   });
 
   @override
@@ -160,6 +165,8 @@ class _AlphabetIndexSliverViewState<T>
         sideBarBuilder: widget.sideBarBuilder,
         tipsBarAlign: widget.tipsBarAlign,
         tipsBuilder: widget.tipsBuilder,
+        curve: widget.curve,
+        duration: widget.duration,
       );
     } else {
       return const SizedBox();

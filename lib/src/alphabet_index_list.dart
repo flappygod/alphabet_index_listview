@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 ///index bar list view
 class AlphabetIndexListView<T> extends StatefulWidget {
   //controller
-  final AlphabetHeaderListViewController<T> controller;
+  final AlphabetHeaderViewController<T> controller;
 
   //group builder
   final AlphabetIndexGroupBuilder groupBuilder;
@@ -52,6 +52,9 @@ class AlphabetIndexListView<T> extends StatefulWidget {
   //side bar enable
   final bool indexSideBarEnable;
 
+  final Curve? curve;
+  final Duration? duration;
+
   //index bar list view
   const AlphabetIndexListView({
     super.key,
@@ -79,6 +82,8 @@ class AlphabetIndexListView<T> extends StatefulWidget {
     this.padding,
     this.onGroupSelected,
     this.indexSideBarEnable = true,
+    this.curve,
+    this.duration,
   });
 
   @override
@@ -146,6 +151,8 @@ class _AlphabetIndexListViewState<T> extends State<AlphabetIndexListView<T>> {
         sideBarBuilder: widget.sideBarBuilder,
         tipsBarAlign: widget.tipsBarAlign,
         tipsBuilder: widget.tipsBuilder,
+        curve: widget.curve,
+        duration: widget.duration,
       );
     } else {
       return const SizedBox();

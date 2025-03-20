@@ -60,9 +60,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  AlphabetHeaderSliverViewController<String> controller =
-      AlphabetHeaderSliverViewController(
-    listViewController: AnchorScrollController(),
+  AlphabetHeaderViewController<String> controller =
+      AlphabetHeaderViewController(
+    groupHeight: 30,
+    childHeight: 80,
   );
 
   List<String> dataList = List.from({
