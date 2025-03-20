@@ -367,6 +367,8 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
           }
           _groupPositionList = preferMap;
         }
+      } else {
+        _groupPositionList = preferMap;
       }
     } else {
       _groupPositionList.addAll(actualMap);
