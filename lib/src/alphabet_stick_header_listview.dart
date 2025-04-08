@@ -167,6 +167,11 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
         initialScrollOffset:
             oldWidget.controller.listViewController.position.pixels,
       );
+      oldWidget.controller.listViewController
+          .getListeners()
+          .forEach((listener) {
+        widget.controller.listViewController.addListener(listener);
+      });
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _groupPositionList.clear();
