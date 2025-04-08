@@ -163,15 +163,16 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
     if (widget.stickHeader) {
       _scrollKey = GlobalKey();
       _groupKey = GlobalKey();
-      widget.controller.listViewController = AnchorScrollController(
+      AnchorScrollController anchorScrollController = AnchorScrollController(
         initialScrollOffset:
             oldWidget.controller.listViewController.position.pixels,
       );
       oldWidget.controller.listViewController
           .getListeners()
           .forEach((listener) {
-        widget.controller.listViewController.addListener(listener);
+        anchorScrollController.addListener(listener);
       });
+      widget.controller.listViewController = anchorScrollController;
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _groupPositionList.clear();
