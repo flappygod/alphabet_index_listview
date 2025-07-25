@@ -1,3 +1,3 @@
 ## 1.0.35
 
-1. Remove un need class and add onChange for alphabet_index_tip_side_bar.
+1. Add rebuildListViewController to fix bugs when app data is changed and stickHeader is set to true.

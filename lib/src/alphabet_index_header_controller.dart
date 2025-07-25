@@ -1,5 +1,5 @@
 import 'package:alphabet_index_listview/alphabet_index_listview.dart';
-import 'package:flutter/animation.dart';
+import 'package:flutter/cupertino.dart';
 import 'dart:math';
 
 ///group list view controller
@@ -18,6 +18,26 @@ class AlphabetHeaderViewController<T> {
 
   ///prefer child widget height
   final double _preferChildHeight;
+
+  ///scroll key
+  GlobalKey _scrollKey = GlobalKey();
+
+  ///group key
+  GlobalKey _groupKey = GlobalKey();
+
+  ///header key
+  final GlobalKey _headerKey = GlobalKey();
+
+  ///footer key
+  final GlobalKey _footerKey = GlobalKey();
+
+  GlobalKey get groupKey => _groupKey;
+
+  GlobalKey get scrollKey => _scrollKey;
+
+  GlobalKey get headerKey => _headerKey;
+
+  GlobalKey get footerKey => _footerKey;
 
   ///create list view controller
   AlphabetHeaderViewController({
@@ -125,4 +145,18 @@ class AlphabetHeaderViewController<T> {
   double? get preferChildHeight => _preferChildHeight;
 
   double? get preferGroupHeight => _preferGroupHeight;
+
+  ///reinit list view controller to fix bugs when data changed
+  ///在某些情况下，因为数据发生改变可能导致滚动位置变化而造成stickView出现不正常的情况，可以调用这个方法修复
+  void rebuildListViewController() {
+    _scrollKey = GlobalKey();
+    _groupKey = GlobalKey();
+    AnchorScrollController anchorScrollController = AnchorScrollController(
+      initialScrollOffset: listViewController.position.pixels,
+    );
+    listViewController.getListeners().forEach((listener) {
+      anchorScrollController.addListener(listener);
+    });
+    _listViewController = anchorScrollController;
+  }
 }

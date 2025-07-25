@@ -69,12 +69,6 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
   final String _uniqueStr =
       "alphabet_index_list_view_stick_header_index_prefix";
 
-  ///scroll key
-  GlobalKey _scrollKey = GlobalKey();
-
-  ///header key
-  GlobalKey _groupKey = GlobalKey();
-
   ///provider
   late AlphabetHeaderProviderInterface _headerProvider;
 
@@ -116,7 +110,7 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
 
       ///provide total list height
       provideHeightTotalListFunc: () {
-        return _scrollKey.currentContext?.size?.height ?? 0;
+        return widget.controller.scrollKey.currentContext?.size?.height ?? 0;
       },
 
       ///provide header height
@@ -160,20 +154,6 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
     if (oldWidget.controller != widget.controller) {
       widget.controller.headerProvider = _headerProvider;
     }
-    if (widget.stickHeader) {
-      _scrollKey = GlobalKey();
-      _groupKey = GlobalKey();
-      AnchorScrollController anchorScrollController = AnchorScrollController(
-        initialScrollOffset:
-            oldWidget.controller.listViewController.position.pixels,
-      );
-      oldWidget.controller.listViewController
-          .getListeners()
-          .forEach((listener) {
-        anchorScrollController.addListener(listener);
-      });
-      widget.controller.listViewController = anchorScrollController;
-    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _groupPositionList.clear();
       _refreshGroupPositions();
@@ -197,7 +177,7 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
         children: [
           _buildListView(),
           AlphabetHeaderListViewStickView(
-            key: _groupKey,
+            key: widget.controller.groupKey,
             stickOffsetController: _headerController,
             groupBuilder: widget.groupBuilder,
             dataList: widget.dataList,
@@ -217,7 +197,7 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
         return false;
       },
       child: ListView.builder(
-        key: _scrollKey,
+        key: widget.controller.scrollKey,
         controller: widget.controller.listViewController,
         itemCount: AlphabetIndexTool.getItemIndexCount(widget.dataList),
         addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
@@ -267,8 +247,8 @@ class _AlphabetHeaderListViewState<T> extends State<AlphabetHeaderListView<T>> {
   ///get the list view render box
   Offset? _getListViewOffset() {
     ///get list render box
-    RenderBox? listRenderBox =
-        _scrollKey.currentContext?.findRenderObject() as RenderBox?;
+    RenderBox? listRenderBox = widget.controller.scrollKey.currentContext
+        ?.findRenderObject() as RenderBox?;
     return listRenderBox?.localToGlobal(const Offset(0.0, 0.0));
   }
 

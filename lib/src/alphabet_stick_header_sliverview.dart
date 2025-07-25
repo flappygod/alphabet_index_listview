@@ -79,18 +79,6 @@ class _AlphabetHeaderSliverViewState<T>
   final String _uniqueStr =
       "alphabet_index_list_view_stick_header_index_prefix";
 
-  ///scroll key
-  GlobalKey _scrollKey = GlobalKey();
-
-  ///group key
-  GlobalKey _groupKey = GlobalKey();
-
-  ///header key
-  final GlobalKey _headerKey = GlobalKey();
-
-  ///footer key
-  final GlobalKey _footerKey = GlobalKey();
-
   ///provider
   late AlphabetHeaderProviderInterface _headerProvider;
 
@@ -132,7 +120,7 @@ class _AlphabetHeaderSliverViewState<T>
 
       ///provide total list height
       provideHeightTotalListFunc: () {
-        return _scrollKey.currentContext?.size?.height ?? 0;
+        return widget.controller.scrollKey.currentContext?.size?.height ?? 0;
       },
 
       ///provide header height
@@ -163,11 +151,11 @@ class _AlphabetHeaderSliverViewState<T>
   }
 
   double _getHeaderHeight() {
-    return _headerKey.currentContext?.size?.height ?? 0;
+    return widget.controller.headerKey.currentContext?.size?.height ?? 0;
   }
 
   double _getFooterHeight() {
-    return _footerKey.currentContext?.size?.height ?? 0;
+    return widget.controller.footerKey.currentContext?.size?.height ?? 0;
   }
 
   ///init state
@@ -183,20 +171,6 @@ class _AlphabetHeaderSliverViewState<T>
     ///remove former listener and add current
     if (oldWidget.controller != widget.controller) {
       widget.controller.headerProvider = _headerProvider;
-    }
-    if (widget.stickHeader) {
-      _scrollKey = GlobalKey();
-      _groupKey = GlobalKey();
-      AnchorScrollController anchorScrollController = AnchorScrollController(
-        initialScrollOffset:
-            oldWidget.controller.listViewController.position.pixels,
-      );
-      oldWidget.controller.listViewController
-          .getListeners()
-          .forEach((listener) {
-        anchorScrollController.addListener(listener);
-      });
-      widget.controller.listViewController = anchorScrollController;
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _groupPositionList.clear();
@@ -222,7 +196,7 @@ class _AlphabetHeaderSliverViewState<T>
         children: [
           _buildListView(),
           AlphabetHeaderListViewStickView(
-            key: _groupKey,
+            key: widget.controller.groupKey,
             stickOffsetController: _headerController,
             groupBuilder: widget.groupBuilder,
             dataList: widget.dataList,
@@ -242,7 +216,7 @@ class _AlphabetHeaderSliverViewState<T>
         return false;
       },
       child: CustomScrollView(
-        key: _scrollKey,
+        key: widget.controller.scrollKey,
         controller: widget.controller.listViewController,
         physics: widget.physics,
         cacheExtent: widget.cacheExtent,
@@ -259,7 +233,7 @@ class _AlphabetHeaderSliverViewState<T>
                 : EdgeInsets.zero,
             sliver: SliverToBoxAdapter(
               child: SizedBox(
-                key: _headerKey,
+                key: widget.controller.headerKey,
                 child: widget.headerView,
               ),
             ),
@@ -313,7 +287,7 @@ class _AlphabetHeaderSliverViewState<T>
                 : EdgeInsets.zero,
             sliver: SliverToBoxAdapter(
               child: SizedBox(
-                key: _footerKey,
+                key: widget.controller.footerKey,
                 child: widget.footerView,
               ),
             ),
@@ -326,8 +300,8 @@ class _AlphabetHeaderSliverViewState<T>
   ///get the list view render box
   Offset? _getListViewOffset() {
     ///get list render box
-    RenderBox? listRenderBox =
-        _scrollKey.currentContext?.findRenderObject() as RenderBox?;
+    RenderBox? listRenderBox = widget.controller.scrollKey.currentContext
+        ?.findRenderObject() as RenderBox?;
     return listRenderBox?.localToGlobal(const Offset(0.0, 0.0));
   }
 
